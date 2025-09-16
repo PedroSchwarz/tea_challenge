@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
 import 'package:tea_challenge/app/theming/app_spacing.dart';
+import 'package:tea_challenge/features/entries/entries.dart';
 import 'package:tea_challenge/features/home/ui/view_models/home_view_model.dart';
 
 class HomeScreen extends StatefulWidget {
@@ -24,6 +26,12 @@ class _HomeScreenState extends State<HomeScreen> {
   }
 
   @override
+  void dispose() {
+    widget.viewModel.dispose();
+    super.dispose();
+  }
+
+  @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
 
@@ -42,7 +50,7 @@ class _HomeScreenState extends State<HomeScreen> {
       body: Column(
         children: [
           Padding(
-            padding: const EdgeInsets.all(AppSpacing.sm),
+            padding: const EdgeInsets.all(AppSpacing.md),
             child: Column(
               children: [
                 Selector<HomeViewModel, String>(
@@ -210,7 +218,7 @@ class _HomeScreenState extends State<HomeScreen> {
         ],
       ),
       floatingActionButton: FloatingActionButton.extended(
-        onPressed: () => widget.viewModel.load(),
+        onPressed: () => context.goNamed(CreateRetryScreen.routeName),
         label: const Text('Add Entry'),
         icon: const Icon(Icons.add),
       ),

@@ -19,6 +19,11 @@ class AppTheme {
       titleTextStyle: AppTypography.defaultTextTheme.displayMedium?.copyWith(color: Colors.black),
       backgroundColor: lightBackgroundColor,
     ),
+    inputDecorationTheme: const InputDecorationTheme(
+      border: InputBorder.none,
+      focusedBorder: OutlineInputBorder(borderSide: BorderSide(color: primaryPurple)),
+      filled: true,
+    ),
   );
 
   static final ThemeData darkTheme = ThemeData(
@@ -31,6 +36,11 @@ class AppTheme {
       centerTitle: false,
       titleTextStyle: AppTypography.defaultTextTheme.displayMedium?.copyWith(color: Colors.white),
       backgroundColor: darkBackgroundColor,
+    ),
+    inputDecorationTheme: const InputDecorationTheme(
+      border: InputBorder.none,
+      focusedBorder: OutlineInputBorder(borderSide: BorderSide(color: primaryPurpleLight)),
+      filled: true,
     ),
   );
 }

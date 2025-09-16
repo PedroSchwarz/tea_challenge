@@ -55,8 +55,14 @@ class MainLocator extends BaseServiceLocator {
     getIt.registerSingleton<FoodLocalDataSource>(FoodLocalDataSourceImpl(manager: getIt<FoodRecordManager>()));
     getIt.registerSingleton<WaterLocalDataSource>(WaterLocalDataSourceImpl(manager: getIt<WaterRecordManager>()));
     getIt.registerSingleton<FoodRecordRepository>(FoodRecordRepository(foodLocalDataSource: getIt<FoodLocalDataSource>()));
+    getIt.registerSingleton<WaterRecordRepository>(WaterRecordRepository(waterLocalDataSource: getIt<WaterLocalDataSource>()));
     getIt.registerFactory<HomeViewModel>(
       () => HomeViewModel(foodRecordRepository: getIt<FoodRecordRepository>(), userRepository: getIt<UserRepository>()),
+    );
+
+    /// Entries Dependencies
+    getIt.registerFactory<CreateEntryViewModel>(
+      () => CreateEntryViewModel(foodRecordRepository: getIt<FoodRecordRepository>(), waterRecordRepository: getIt<WaterRecordRepository>()),
     );
   }
 }
