@@ -2,7 +2,7 @@ import 'dart:convert';
 
 import 'package:flutter/foundation.dart';
 import 'package:tea_challenge/app/storage/app_local_secure_storage.dart';
-import 'package:tea_challenge/user/data/models/user_data.dart';
+import 'package:tea_challenge/features/user/data/models/user_data.dart';
 
 class UserLocalDataSource {
   UserLocalDataSource({required this.appLocalStorage});

@@ -9,7 +9,7 @@ import 'package:tea_challenge/app/storage/app_local_secure_storage.dart';
 import 'package:tea_challenge/app/ui/navigation.dart';
 import 'package:tea_challenge/features/entries/entries.dart';
 import 'package:tea_challenge/features/home/home.dart';
-import 'package:tea_challenge/user/user.dart';
+import 'package:tea_challenge/features/user/user.dart';
 
 final getIt = GetIt.instance;
 

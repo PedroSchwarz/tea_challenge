@@ -1,8 +1,8 @@
 import 'package:flutter/foundation.dart';
 import 'package:logging/logging.dart';
 import 'package:rxdart/rxdart.dart';
-import 'package:tea_challenge/user/data/data_source/user_local_data_source.dart';
-import 'package:tea_challenge/user/data/models/user_data.dart';
+import 'package:tea_challenge/features/user/data/data_source/user_local_data_source.dart';
+import 'package:tea_challenge/features/user/data/models/user_data.dart';
 
 class UserRepository {
   UserRepository({required this.userLocalDataSource});

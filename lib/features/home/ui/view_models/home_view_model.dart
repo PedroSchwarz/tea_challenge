@@ -3,7 +3,7 @@ import 'package:logging/logging.dart';
 import 'package:tea_challenge/features/entries/data/models/food_progress.dart';
 import 'package:tea_challenge/features/entries/data/models/food_record.dart';
 import 'package:tea_challenge/features/entries/data/repositories/food_record_repository.dart';
-import 'package:tea_challenge/user/user.dart';
+import 'package:tea_challenge/features/user/user.dart';
 
 class HomeViewModel extends ChangeNotifier {
   HomeViewModel({required this.foodRecordRepository, required this.userRepository});
