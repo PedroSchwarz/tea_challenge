@@ -36,11 +36,19 @@ class HomeViewModel extends ChangeNotifier {
     _isLoading = true;
     notifyListeners();
 
-    await _loadUser();
-    await _loadFoodProgress();
-    await _loadFoodRecords();
+    await Future.wait([_loadUser(), _loadFoodProgress(), _loadFoodRecords()]);
 
     _isLoading = false;
+    notifyListeners();
+  }
+
+  Future<void> refresh() async {
+    _isRefreshing = true;
+    notifyListeners();
+
+    await Future.wait([_loadUser(), _loadFoodProgress(), _loadFoodRecords()]);
+
+    _isRefreshing = false;
     notifyListeners();
   }
 

@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
-import 'package:provider/provider.dart';
 import 'package:tea_challenge/features/entries/entries.dart';
 import 'package:tea_challenge/features/home/home.dart';
 
@@ -15,8 +14,7 @@ GoRouter createRouter() {
         path: '/${HomeScreen.routeName}',
         name: HomeScreen.routeName,
         builder: (context, state) {
-          final viewModel = context.read<HomeViewModel>();
-          return HomeScreen(viewModel: viewModel);
+          return const HomeScreen();
         },
         routes: [
           GoRoute(
