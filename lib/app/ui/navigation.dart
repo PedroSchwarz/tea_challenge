@@ -1,17 +1,22 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
+import 'package:provider/provider.dart';
+import 'package:tea_challenge/features/home/home.dart';
 
 final GlobalKey<NavigatorState> navigatorKey = GlobalKey<NavigatorState>();
 
 GoRouter createRouter() {
   final router = GoRouter(
     navigatorKey: navigatorKey,
-    initialLocation: '/home',
+    initialLocation: '/${HomeScreen.routeName}',
     routes: [
       GoRoute(
-        path: '/home',
-        name: 'home',
-        builder: (context, state) => const SizedBox(),
+        path: '/${HomeScreen.routeName}',
+        name: HomeScreen.routeName,
+        builder: (context, state) {
+          final viewModel = context.read<HomeViewModel>();
+          return HomeScreen(viewModel: viewModel);
+        },
         routes: [
           GoRoute(
             path: '/details',
