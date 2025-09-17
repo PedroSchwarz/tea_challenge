@@ -9,6 +9,7 @@ import 'package:tea_challenge/features/entries/data/models/entry.dart';
 import 'package:tea_challenge/features/entries/data/models/water_progress.dart';
 import 'package:tea_challenge/features/entries/entries.dart';
 import 'package:tea_challenge/features/entries/ui/view_models/entry_type.dart';
+import 'package:tea_challenge/features/history/history.dart';
 import 'package:tea_challenge/features/home/ui/view_models/home_view_model.dart';
 import 'package:tea_challenge/features/home/ui/views/components/empty_entries_content.dart';
 import 'package:tea_challenge/features/home/ui/views/components/entries_list_content.dart';
@@ -87,7 +88,7 @@ class _HomeScreenState extends State<HomeScreen> {
                         const Gap(AppSpacing.md),
                         // Main Progress Rings
                         Padding(
-                          padding: const EdgeInsets.symmetric(horizontal: AppSpacing.md),
+                          padding: const EdgeInsets.all(AppSpacing.md),
                           child: LayoutBuilder(
                             builder: (context, constraints) {
                               final isLandscape = constraints.maxWidth > AppSpacing.maxWidthLandscape;
@@ -122,7 +123,7 @@ class _HomeScreenState extends State<HomeScreen> {
                                         builder: (context, progress, child) {
                                           return WaterCupProgress(
                                             progressPercentage: progress.progressPercentage,
-                                            topLabel: '${progress.totalAmountInLiters}L',
+                                            topLabel: '${progress.totalAmountInLiters.toStringAsFixed(1)}L',
                                             middleLabel: 'of ${progress.goalInLiters}L',
                                             bottomLabel: '${(progress.progressPercentage * 100).toInt()}%',
                                             color: Colors.blue,
@@ -131,38 +132,48 @@ class _HomeScreenState extends State<HomeScreen> {
                                         },
                                       ),
                                       if (isLandscape)
-                                        Selector<HomeViewModel, FoodProgress>(
-                                          selector: (context, viewModel) => viewModel.foodProgress,
-                                          builder: (context, foodProgress, child) {
-                                            return Selector<HomeViewModel, WaterProgress>(
-                                              selector: (context, viewModel) => viewModel.waterProgress,
-                                              builder: (context, waterProgress, child) {
-                                                return GoalDetailsSection(foodProgress: foodProgress, waterProgress: waterProgress);
-                                              },
-                                            );
+                                        Selector<HomeViewModel, ({FoodProgress foodProgress, WaterProgress waterProgress})>(
+                                          selector:
+                                              (context, viewModel) => (foodProgress: viewModel.foodProgress, waterProgress: viewModel.waterProgress),
+                                          builder: (context, data, child) {
+                                            return GoalDetailsSection(foodProgress: data.foodProgress, waterProgress: data.waterProgress);
                                           },
                                         ),
                                     ],
                                   ),
                                   if (!isLandscape) ...[
-                                    Selector<HomeViewModel, FoodProgress>(
-                                      selector: (context, viewModel) => viewModel.foodProgress,
-                                      builder: (context, foodProgress, child) {
-                                        return Selector<HomeViewModel, WaterProgress>(
-                                          selector: (context, viewModel) => viewModel.waterProgress,
-                                          builder: (context, waterProgress, child) {
-                                            return GoalDetailsSection(foodProgress: foodProgress, waterProgress: waterProgress);
-                                          },
-                                        );
+                                    Selector<HomeViewModel, ({FoodProgress foodProgress, WaterProgress waterProgress})>(
+                                      selector:
+                                          (context, viewModel) => (foodProgress: viewModel.foodProgress, waterProgress: viewModel.waterProgress),
+                                      builder: (context, data, child) {
+                                        return GoalDetailsSection(foodProgress: data.foodProgress, waterProgress: data.waterProgress);
                                       },
                                     ),
-                                    const Gap(AppSpacing.xs),
                                   ],
                                 ],
                               );
                             },
                           ),
                         ),
+                        const Gap(AppSpacing.md),
+                        // Progress History Section
+                        Selector<HomeViewModel, ({List<HistoryData> historyData, bool isLoading, DateTime selectedDate})>(
+                          selector:
+                              (context, viewModel) => (
+                                historyData: viewModel.historyData,
+                                isLoading: viewModel.isLoading,
+                                selectedDate: viewModel.selectedDate,
+                              ),
+                          builder: (context, data, child) {
+                            return ProgressionHistorySection(
+                              historyData: data.historyData,
+                              isLoading: data.isLoading,
+                              selectedDate: DateUtils.dateOnly(data.selectedDate),
+                              onTap: (dayData) => _viewModel.selectDate(dayData.date),
+                            );
+                          },
+                        ),
+                        const Gap(AppSpacing.lg),
                       ],
                     ),
                   ),
@@ -188,6 +199,7 @@ class _HomeScreenState extends State<HomeScreen> {
 
                       return EntriesListContent(
                         entries: viewModel.entries,
+                        enabled: viewModel.areActionsEnabled,
                         onDismiss: _viewModel.setEntryToDelete,
                         onTap: (entry) async {
                           if (context.mounted) {
@@ -232,16 +244,24 @@ class _HomeScreenState extends State<HomeScreen> {
             ),
           ],
         ),
-        floatingActionButton: FloatingActionButton.extended(
-          tooltip: 'Add Entry',
-          onPressed: () async {
-            if (context.mounted) {
-              final _ = await context.pushNamed(CreateEntryScreen.routeName);
-              _viewModel.refresh();
-            }
+        floatingActionButton: Selector<HomeViewModel, bool>(
+          selector: (context, viewModel) => viewModel.areActionsEnabled,
+          builder: (context, areActionsEnabled, child) {
+            return Visibility(
+              visible: areActionsEnabled,
+              child: FloatingActionButton.extended(
+                tooltip: 'Add Entry',
+                onPressed: () async {
+                  if (context.mounted) {
+                    final _ = await context.pushNamed(CreateEntryScreen.routeName);
+                    _viewModel.refresh();
+                  }
+                },
+                label: const Text('Add Entry'),
+                icon: const Icon(Icons.add),
+              ),
+            );
           },
-          label: const Text('Add Entry'),
-          icon: const Icon(Icons.add),
         ),
         floatingActionButtonLocation: FloatingActionButtonLocation.centerFloat,
       ),

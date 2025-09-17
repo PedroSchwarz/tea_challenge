@@ -57,14 +57,14 @@ class WaterRecordRepository {
     }
   }
 
-  Future<WaterProgress> getWaterProgressForToday(double goalInLiters) async {
+  Future<WaterProgress> getWaterProgressForDate({required DateTime date, required double goalInLiters}) async {
     try {
-      final waterRecords = await waterLocalDataSource.getWaterRecords(date: DateTime.now());
+      final waterRecords = await getWaterRecords(date: date);
       final totalAmountInMl = waterRecords.fold(0.0, (sum, record) => sum + record.amountInMl);
 
       return WaterProgress(totalAmountInMl: totalAmountInMl, goalInLiters: goalInLiters);
     } catch (e, s) {
-      _logger.severe('Error getting water progress for today', e, s);
+      _logger.severe('Error getting water progress for date', e, s);
       rethrow;
     }
   }
