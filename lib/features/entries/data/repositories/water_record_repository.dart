@@ -1,6 +1,7 @@
 import 'package:flutter/foundation.dart';
 import 'package:logging/logging.dart';
 import 'package:tea_challenge/features/entries/data/data_sources/water_local_data_source.dart';
+import 'package:tea_challenge/features/entries/data/models/water_progress.dart';
 import 'package:tea_challenge/features/entries/data/models/water_record.dart';
 
 class WaterRecordRepository {
@@ -52,6 +53,18 @@ class WaterRecordRepository {
       return await waterLocalDataSource.getWaterRecords();
     } catch (e, s) {
       _logger.severe('Error getting water records', e, s);
+      rethrow;
+    }
+  }
+
+  Future<WaterProgress> getWaterProgressForToday(double goalInLiters) async {
+    try {
+      final waterRecords = await waterLocalDataSource.getWaterRecords(date: DateTime.now());
+      final totalAmountInMl = waterRecords.fold(0.0, (sum, record) => sum + record.amountInMl);
+
+      return WaterProgress(totalAmountInMl: totalAmountInMl, goalInLiters: goalInLiters);
+    } catch (e, s) {
+      _logger.severe('Error getting water progress for today', e, s);
       rethrow;
     }
   }

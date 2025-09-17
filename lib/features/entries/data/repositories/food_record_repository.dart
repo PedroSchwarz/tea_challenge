@@ -12,20 +12,6 @@ class FoodRecordRepository {
 
   final Logger _logger = Logger('FoodRecordRepository');
 
-  Future<FoodProgress> getTotalCaloriesForToday() async {
-    try {
-      final foodRecords = await foodLocalDataSource.getFoodRecords();
-      final totalCalories = foodRecords.fold(0.0, (sum, record) => sum + record.caloriesPerPortion);
-      final totalCarbs = foodRecords.fold(0.0, (sum, record) => sum + record.carbs);
-      final totalProtein = foodRecords.fold(0.0, (sum, record) => sum + record.protein);
-      final totalFat = foodRecords.fold(0.0, (sum, record) => sum + record.fat);
-      return FoodProgress(calories: totalCalories, carbs: totalCarbs, protein: totalProtein, fat: totalFat);
-    } catch (e, s) {
-      _logger.severe('Error getting total calories for today', e, s);
-      rethrow;
-    }
-  }
-
   Future<void> insertFoodRecord(FoodRecord record) async {
     try {
       await foodLocalDataSource.insertFoodRecord(record);
@@ -67,6 +53,35 @@ class FoodRecordRepository {
       return await foodLocalDataSource.getFoodRecords();
     } catch (e, s) {
       _logger.severe('Error getting food records', e, s);
+      rethrow;
+    }
+  }
+
+  Future<FoodProgress> getFoodProgressForToday({
+    required double caloriesGoal,
+    required double carbsGoal,
+    required double proteinGoal,
+    required double fatGoal,
+  }) async {
+    try {
+      final foodRecords = await foodLocalDataSource.getFoodRecords(date: DateTime.now());
+      final totalCalories = foodRecords.fold(0.0, (sum, record) => sum + record.caloriesPerPortion);
+      final totalCarbs = foodRecords.fold(0.0, (sum, record) => sum + record.carbs);
+      final totalProtein = foodRecords.fold(0.0, (sum, record) => sum + record.protein);
+      final totalFat = foodRecords.fold(0.0, (sum, record) => sum + record.fat);
+
+      return FoodProgress(
+        totalCalories: totalCalories,
+        totalCarbs: totalCarbs,
+        totalProtein: totalProtein,
+        totalFat: totalFat,
+        caloriesGoal: caloriesGoal,
+        carbsGoal: carbsGoal,
+        proteinGoal: proteinGoal,
+        fatGoal: fatGoal,
+      );
+    } catch (e, s) {
+      _logger.severe('Error getting food progress for today', e, s);
       rethrow;
     }
   }
