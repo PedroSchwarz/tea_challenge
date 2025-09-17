@@ -9,11 +9,17 @@ import 'package:tea_challenge/features/entries/data/models/water_progress.dart';
 import 'package:tea_challenge/features/entries/data/models/water_record.dart';
 import 'package:tea_challenge/features/entries/data/repositories/food_record_repository.dart';
 import 'package:tea_challenge/features/entries/data/repositories/water_record_repository.dart';
+import 'package:tea_challenge/features/history/history.dart';
 import 'package:tea_challenge/features/home/ui/view_models/home_filter_type.dart';
 import 'package:tea_challenge/features/user/user.dart';
 
 class HomeViewModel extends ChangeNotifier {
-  HomeViewModel({required this.foodRecordRepository, required this.waterRecordRepository, required this.userRepository});
+  HomeViewModel({
+    required this.foodRecordRepository,
+    required this.waterRecordRepository,
+    required this.userRepository,
+    required this.historyRepository,
+  });
 
   @visibleForTesting
   final FoodRecordRepository foodRecordRepository;
@@ -23,6 +29,9 @@ class HomeViewModel extends ChangeNotifier {
 
   @visibleForTesting
   final UserRepository userRepository;
+
+  @visibleForTesting
+  final HistoryRepository historyRepository;
 
   final Logger _logger = Logger('HomeViewModel');
 
@@ -61,6 +70,7 @@ class HomeViewModel extends ChangeNotifier {
   bool _showDeleteEntryDialog = false;
   Entry? _entryToDelete;
   bool _showUndoDeleteEntry = false;
+  List<HistoryData> _historyData = [];
 
   // Getters
   bool get isLoading => _isLoading;
@@ -80,13 +90,14 @@ class HomeViewModel extends ChangeNotifier {
   bool get showDeleteEntryDialog => _showDeleteEntryDialog;
   bool get noRecords => entries.isEmpty;
   bool get showUndoDeleteEntry => _showUndoDeleteEntry;
+  List<HistoryData> get historyData => _historyData;
 
   Future<void> load() async {
     _isLoading = true;
     notifyListeners();
 
     await Future.wait([_loadUser(), _loadFoodRecords(), _loadWaterRecords()]);
-    await Future.wait([_loadFoodProgress(), _loadWaterProgress(), _loadEntries()]);
+    await Future.wait([_loadFoodProgress(), _loadWaterProgress(), _loadEntries(), _loadHistoryData()]);
 
     _isLoading = false;
     notifyListeners();
@@ -97,7 +108,7 @@ class HomeViewModel extends ChangeNotifier {
     notifyListeners();
 
     await Future.wait([_loadUser(), _loadFoodRecords(), _loadWaterRecords()]);
-    await Future.wait([_loadFoodProgress(), _loadWaterProgress(), _loadEntries()]);
+    await Future.wait([_loadFoodProgress(), _loadWaterProgress(), _loadEntries(), _loadHistoryData()]);
 
     _isRefreshing = false;
     notifyListeners();
@@ -273,6 +284,15 @@ class HomeViewModel extends ChangeNotifier {
   void setShowUndoDeleteEntry(bool value) {
     _showUndoDeleteEntry = value;
     notifyListeners();
+  }
+
+  Future<void> _loadHistoryData() async {
+    try {
+      _historyData = await historyRepository.getHistoryData(caloriesGoal: _userData.caloriesGoal, waterGoal: _userData.waterGoal, days: 3);
+      notifyListeners();
+    } catch (e, s) {
+      _logger.severe('Error loading history data', e, s);
+    }
   }
 
   @override

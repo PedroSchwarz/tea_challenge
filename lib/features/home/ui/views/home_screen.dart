@@ -9,6 +9,7 @@ import 'package:tea_challenge/features/entries/data/models/entry.dart';
 import 'package:tea_challenge/features/entries/data/models/water_progress.dart';
 import 'package:tea_challenge/features/entries/entries.dart';
 import 'package:tea_challenge/features/entries/ui/view_models/entry_type.dart';
+import 'package:tea_challenge/features/history/history.dart';
 import 'package:tea_challenge/features/home/ui/view_models/home_view_model.dart';
 import 'package:tea_challenge/features/home/ui/views/components/empty_entries_content.dart';
 import 'package:tea_challenge/features/home/ui/views/components/entries_list_content.dart';
@@ -86,8 +87,9 @@ class _HomeScreenState extends State<HomeScreen> {
                         ),
                         const Gap(AppSpacing.md),
                         // Main Progress Rings
-                        Padding(
-                          padding: const EdgeInsets.symmetric(horizontal: AppSpacing.md),
+                        Container(
+                          padding: const EdgeInsets.all(AppSpacing.md),
+                          decoration: BoxDecoration(color: theme.colorScheme.surface, borderRadius: BorderRadius.circular(AppSpacing.sm)),
                           child: LayoutBuilder(
                             builder: (context, constraints) {
                               final isLandscape = constraints.maxWidth > AppSpacing.maxWidthLandscape;
@@ -156,13 +158,27 @@ class _HomeScreenState extends State<HomeScreen> {
                                         );
                                       },
                                     ),
-                                    const Gap(AppSpacing.xs),
                                   ],
                                 ],
                               );
                             },
                           ),
                         ),
+                        const Gap(AppSpacing.md),
+                        // Progress History Section
+                        Selector<HomeViewModel, ({List<HistoryData> historyData, bool isLoading})>(
+                          selector: (context, viewModel) => (historyData: viewModel.historyData, isLoading: viewModel.isLoading),
+                          builder: (context, data, child) {
+                            return ProgressionHistorySection(
+                              historyData: data.historyData,
+                              isLoading: data.isLoading,
+                              onTap: (_) {
+                                print('asdadsasd');
+                              },
+                            );
+                          },
+                        ),
+                        const Gap(AppSpacing.lg),
                       ],
                     ),
                   ),
