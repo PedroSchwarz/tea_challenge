@@ -22,6 +22,10 @@ abstract class Entry with _$Entry {
     };
   }
 
+  String get formattedCreatedAt {
+    return '${createdAt!.hour.toString().padLeft(2, '0')}:${createdAt!.minute.toString().padLeft(2, '0')}';
+  }
+
   String get displayName {
     return switch (this) {
       FoodEntry(foodRecord: final foodRecord) => foodRecord.name,

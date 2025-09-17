@@ -9,4 +9,5 @@ export 'data/tables/food_record_entry.dart';
 export 'data/tables/water_record_entry.dart';
 export 'domain/usecases/validate_numeric_field.dart';
 export 'ui/view_models/create_entry_view_model.dart';
+export 'ui/views/components/entry_item.dart';
 export 'ui/views/create_entry_screen.dart';

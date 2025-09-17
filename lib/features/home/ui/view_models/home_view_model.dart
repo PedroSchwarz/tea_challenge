@@ -10,6 +10,8 @@ import 'package:tea_challenge/features/entries/data/models/water_progress.dart';
 import 'package:tea_challenge/features/entries/data/models/water_record.dart';
 import 'package:tea_challenge/features/entries/data/repositories/food_record_repository.dart';
 import 'package:tea_challenge/features/entries/data/repositories/water_record_repository.dart';
+import 'package:tea_challenge/features/entries/ui/view_models/entry_type.dart';
+import 'package:tea_challenge/features/home/ui/view_models/home_filter_type.dart';
 import 'package:tea_challenge/features/user/user.dart';
 
 class HomeViewModel extends ChangeNotifier {
@@ -56,6 +58,7 @@ class HomeViewModel extends ChangeNotifier {
   WaterProgress _waterProgress = const WaterProgress(totalAmountInMl: 0, goalInLiters: 4.5);
   List<FoodRecord> _foodRecords = [];
   List<WaterRecord> _waterRecords = [];
+  HomeFilterType _selectedSegment = HomeFilterType.all;
   List<Entry> _entries = [];
   bool _showDeleteEntryDialog = false;
   Entry? _entryToDelete;
@@ -69,7 +72,12 @@ class HomeViewModel extends ChangeNotifier {
   WaterProgress get waterProgress => _waterProgress;
   List<FoodRecord> get foodRecords => _foodRecords;
   List<WaterRecord> get waterRecords => _waterRecords;
-  List<Entry> get entries => _entries;
+  HomeFilterType get selectedSegment => _selectedSegment;
+  List<Entry> get entries => switch (_selectedSegment) {
+    HomeFilterType.water => _waterRecords.map(Entry.water).toList(),
+    HomeFilterType.food => _foodRecords.map(Entry.food).toList(),
+    HomeFilterType.all => _entries,
+  };
   Entry? get entryToDelete => _entryToDelete;
   bool get showDeleteEntryDialog => _showDeleteEntryDialog;
   bool get noRecords => entries.isEmpty;
@@ -138,6 +146,13 @@ class HomeViewModel extends ChangeNotifier {
     }
   }
 
+  void setSelectedSegment(HomeFilterType value) {
+    if (_selectedSegment != value) {
+      _selectedSegment = value;
+      notifyListeners();
+    }
+  }
+
   Future<void> _loadEntries() async {
     try {
       final foodEntries = _foodRecords.map(Entry.food).toList();
@@ -198,12 +213,14 @@ class HomeViewModel extends ChangeNotifier {
             await foodRecordRepository.deleteFoodRecord(foodRecord.id!);
             await _loadFoodProgress();
             setShowUndoDeleteEntry(false);
+            resetEntryToDelete();
           }
         case WaterEntry(waterRecord: final waterRecord):
           if (waterRecord.id != null) {
             await waterRecordRepository.deleteWaterRecord(waterRecord.id!);
             await _loadWaterProgress();
             setShowUndoDeleteEntry(false);
+            resetEntryToDelete();
           }
       }
     });
@@ -252,7 +269,6 @@ class HomeViewModel extends ChangeNotifier {
     }
 
     resetEntryToDelete();
-
     notifyListeners();
   }
 

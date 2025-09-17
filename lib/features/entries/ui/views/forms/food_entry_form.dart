@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_animate/flutter_animate.dart';
-import 'package:gap/gap.dart';
 import 'package:provider/provider.dart';
 import 'package:tea_challenge/app/theming/app_spacing.dart';
 import 'package:tea_challenge/features/entries/domain/usecases/validate_numeric_field.dart';
@@ -172,7 +171,17 @@ class FoodEntryForm extends StatelessWidget {
           Selector<CreateEntryViewModel, double>(
             selector: (context, viewModel) => viewModel.totalCalories,
             builder: (context, totalCalories, child) {
-              return Text('Total Calories: $totalCalories Kcal', style: theme.textTheme.headlineSmall);
+              return Row(
+                spacing: AppSpacing.sm,
+                children: [
+                  Text('Total Calories: $totalCalories Kcal', style: theme.textTheme.headlineSmall),
+                  Tooltip(
+                    margin: const EdgeInsets.all(AppSpacing.sm),
+                    message: 'Total calories is calculated by multiplying the calories per portion by the portion size',
+                    child: Icon(Icons.info_outline, size: 24, color: theme.colorScheme.primary),
+                  ),
+                ],
+              );
             },
           ),
         ],
