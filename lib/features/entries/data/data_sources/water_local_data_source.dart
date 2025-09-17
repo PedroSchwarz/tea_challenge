@@ -5,7 +5,7 @@ import 'package:tea_challenge/features/entries/data/models/water_record.dart';
 
 abstract class WaterLocalDataSource {
   Future<void> insertWaterRecord(WaterRecord record);
-  Future<List<WaterRecord>> getWaterRecords();
+  Future<List<WaterRecord>> getWaterRecords({DateTime? date});
   Future<WaterRecord?> getWaterRecord(int id);
   Future<void> updateWaterRecord(WaterRecord record);
   Future<void> deleteWaterRecord(int id);
@@ -30,13 +30,22 @@ class WaterLocalDataSourceImpl implements WaterLocalDataSource {
   @override
   Future<WaterRecord?> getWaterRecord(int id) async {
     final record = await manager.filter((filter) => filter.id(id)).getSingle();
-    return WaterRecord.fromJson(record.toJson());
+    return WaterRecord(amountInMl: record.amountInMl, id: record.id, createdAt: record.createdAt);
   }
 
   @override
-  Future<List<WaterRecord>> getWaterRecords() async {
-    final records = await manager.get();
-    return records.map((record) => WaterRecord.fromJson(record.toJson())).toList();
+  Future<List<WaterRecord>> getWaterRecords({DateTime? date}) async {
+    if (date != null) {
+      // Get start and end of the day
+      final startOfDay = DateTime(date.year, date.month, date.day);
+      final endOfDay = DateTime(date.year, date.month, date.day, 23, 59, 59, 999);
+
+      final records = await manager.filter((filter) => filter.createdAt.isBetween(startOfDay, endOfDay)).get();
+      return records.map((record) => WaterRecord(amountInMl: record.amountInMl, id: record.id, createdAt: record.createdAt)).toList();
+    } else {
+      final records = await manager.get();
+      return records.map((record) => WaterRecord(amountInMl: record.amountInMl, id: record.id, createdAt: record.createdAt)).toList();
+    }
   }
 
   @override
