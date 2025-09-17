@@ -4,16 +4,20 @@ import 'package:tea_challenge/features/entries/data/models/food_record.dart';
 import 'package:tea_challenge/features/entries/data/models/water_record.dart';
 import 'package:tea_challenge/features/entries/data/repositories/food_record_repository.dart';
 import 'package:tea_challenge/features/entries/data/repositories/water_record_repository.dart';
+import 'package:tea_challenge/features/entries/domain/usecases/validate_numeric_field.dart';
 import 'package:tea_challenge/features/entries/ui/view_models/entry_type.dart';
 
 class CreateEntryViewModel extends ChangeNotifier {
-  CreateEntryViewModel({required this.foodRecordRepository, required this.waterRecordRepository});
+  CreateEntryViewModel({required this.foodRecordRepository, required this.waterRecordRepository, required this.validateNumericField});
 
   @visibleForTesting
   final FoodRecordRepository foodRecordRepository;
 
   @visibleForTesting
   final WaterRecordRepository waterRecordRepository;
+
+  @visibleForTesting
+  final ValidateNumericField validateNumericField;
 
   final Logger _logger = Logger('CreateEntryViewModel');
 
@@ -22,6 +26,7 @@ class CreateEntryViewModel extends ChangeNotifier {
   WaterQuantity _selectedQuantity = WaterQuantity.halfLiter;
   bool _isLoading = false;
   bool _isSaving = false;
+  int? _editingId;
 
   // Food form fields
   String _name = '';
@@ -68,15 +73,18 @@ class CreateEntryViewModel extends ChangeNotifier {
   // Validation
   bool get isFoodFormValid {
     return _name.isNotEmpty &&
-        _caloriesPerPortion.isNotEmpty &&
-        _portionSize.isNotEmpty &&
-        _carbs.isNotEmpty &&
-        _protein.isNotEmpty &&
-        _fat.isNotEmpty;
+        validateNumericField(_caloriesPerPortion) == NumericValidationResult.valid &&
+        validateNumericField(_portionSize) == NumericValidationResult.valid &&
+        validateNumericField(_carbs) == NumericValidationResult.valid &&
+        validateNumericField(_protein) == NumericValidationResult.valid &&
+        validateNumericField(_fat) == NumericValidationResult.valid;
   }
 
   bool get isWaterFormValid {
-    return _selectedQuantity != WaterQuantity.custom || _waterAmount.isNotEmpty;
+    if (_selectedQuantity != WaterQuantity.custom) {
+      return true;
+    }
+    return validateNumericField(_waterAmount) == NumericValidationResult.valid;
   }
 
   bool get canSave {
@@ -84,6 +92,50 @@ class CreateEntryViewModel extends ChangeNotifier {
   }
 
   // Actions
+
+  Future<void> load({required int id, required EntryType type}) async {
+    _isLoading = true;
+    notifyListeners();
+
+    try {
+      _editingId = id;
+      _selectedType = type;
+      if (type == EntryType.food) {
+        await _loadFoodRecord(id);
+      } else {
+        await _loadWaterRecord(id);
+      }
+    } finally {
+      _isLoading = false;
+      notifyListeners();
+    }
+  }
+
+  Future<void> _loadFoodRecord(int id) async {
+    final record = await foodRecordRepository.getFoodRecord(id);
+    if (record != null) {
+      _name = record.name;
+      _caloriesPerPortion = record.caloriesPerPortion.toString();
+      _portionSize = record.portionSize.toString();
+      _carbs = record.carbs.toString();
+      _protein = record.protein.toString();
+      _fat = record.fat.toString();
+    }
+  }
+
+  Future<void> _loadWaterRecord(int id) async {
+    final record = await waterRecordRepository.getWaterRecord(id);
+    if (record != null) {
+      // Convert ml to liters for display
+      final liters = record.amountInMl / 1000;
+      _waterAmount = liters.toString();
+
+      // Try to match with predefined quantities
+      final matchingQuantity = WaterQuantity.values.firstWhere((q) => q.amountInLiters == liters, orElse: () => WaterQuantity.custom);
+      _selectedQuantity = matchingQuantity;
+    }
+  }
+
   void setSelectedType(String type) {
     final entryType = EntryType.fromString(type);
     if (_selectedType != entryType) {
@@ -173,6 +225,7 @@ class CreateEntryViewModel extends ChangeNotifier {
 
   Future<void> _saveFoodRecord() async {
     final record = FoodRecord(
+      id: _editingId,
       name: _name,
       caloriesPerPortion: double.parse(_caloriesPerPortion),
       portionSize: double.parse(_portionSize),
@@ -182,13 +235,21 @@ class CreateEntryViewModel extends ChangeNotifier {
       createdAt: DateTime.now(),
     );
 
-    await foodRecordRepository.insertFoodRecord(record);
+    if (_editingId != null) {
+      await foodRecordRepository.updateFoodRecord(record);
+    } else {
+      await foodRecordRepository.insertFoodRecord(record);
+    }
   }
 
   Future<void> _saveWaterRecord() async {
-    final record = WaterRecord(amountInMl: selectedWaterAmount);
+    final record = WaterRecord(id: _editingId, amountInMl: selectedWaterAmount, createdAt: DateTime.now());
 
-    await waterRecordRepository.insertWaterRecord(record);
+    if (_editingId != null) {
+      await waterRecordRepository.updateWaterRecord(record);
+    } else {
+      await waterRecordRepository.insertWaterRecord(record);
+    }
   }
 
   void reset() {
@@ -203,6 +264,7 @@ class CreateEntryViewModel extends ChangeNotifier {
     _waterAmount = '';
     _isLoading = false;
     _isSaving = false;
+    _editingId = null;
     notifyListeners();
   }
 }
