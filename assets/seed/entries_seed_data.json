@@ -1,0 +1,156 @@
+{
+    "foodRecords": [
+        {
+            "id": null,
+            "name": "Grilled Chicken Breast",
+            "caloriesPerPortion": 165,
+            "portionSize": 1.0,
+            "carbs": 0.0,
+            "protein": 31.0,
+            "fat": 3.6,
+            "createdAt": "2024-01-15T08:30:00.000Z"
+        },
+        {
+            "id": null,
+            "name": "Brown Rice",
+            "caloriesPerPortion": 111,
+            "portionSize": 1.5,
+            "carbs": 23.0,
+            "protein": 2.6,
+            "fat": 0.9,
+            "createdAt": "2024-01-15T12:15:00.000Z"
+        },
+        {
+            "id": null,
+            "name": "Avocado",
+            "caloriesPerPortion": 160,
+            "portionSize": 0.5,
+            "carbs": 8.5,
+            "protein": 2.0,
+            "fat": 14.7,
+            "createdAt": "2024-01-15T12:15:00.000Z"
+        },
+        {
+            "id": null,
+            "name": "Greek Yogurt",
+            "caloriesPerPortion": 100,
+            "portionSize": 1.0,
+            "carbs": 6.0,
+            "protein": 17.0,
+            "fat": 0.0,
+            "createdAt": "2024-01-15T15:45:00.000Z"
+        },
+        {
+            "id": null,
+            "name": "Salmon Fillet",
+            "caloriesPerPortion": 206,
+            "portionSize": 1.2,
+            "carbs": 0.0,
+            "protein": 22.0,
+            "fat": 12.0,
+            "createdAt": "2024-01-15T19:00:00.000Z"
+        },
+        {
+            "id": null,
+            "name": "Sweet Potato",
+            "caloriesPerPortion": 86,
+            "portionSize": 2.0,
+            "carbs": 20.1,
+            "protein": 1.6,
+            "fat": 0.1,
+            "createdAt": "2024-01-15T19:00:00.000Z"
+        },
+        {
+            "id": null,
+            "name": "Oatmeal",
+            "caloriesPerPortion": 154,
+            "portionSize": 1.0,
+            "carbs": 27.0,
+            "protein": 5.0,
+            "fat": 2.6,
+            "createdAt": "2024-01-14T07:00:00.000Z"
+        },
+        {
+            "id": null,
+            "name": "Banana",
+            "caloriesPerPortion": 89,
+            "portionSize": 1.0,
+            "carbs": 22.8,
+            "protein": 1.1,
+            "fat": 0.3,
+            "createdAt": "2024-01-14T10:30:00.000Z"
+        },
+        {
+            "id": null,
+            "name": "Quinoa Salad",
+            "caloriesPerPortion": 120,
+            "portionSize": 1.5,
+            "carbs": 22.0,
+            "protein": 4.4,
+            "fat": 1.9,
+            "createdAt": "2024-01-14T13:00:00.000Z"
+        },
+        {
+            "id": null,
+            "name": "Almonds",
+            "caloriesPerPortion": 164,
+            "portionSize": 0.25,
+            "carbs": 6.1,
+            "protein": 6.0,
+            "fat": 14.2,
+            "createdAt": "2024-01-14T16:00:00.000Z"
+        }
+    ],
+    "waterRecords": [
+        {
+            "id": null,
+            "amountInMl": 250.0,
+            "createdAt": "2024-01-15T08:00:00.000Z"
+        },
+        {
+            "id": null,
+            "amountInMl": 300.0,
+            "createdAt": "2024-01-15T10:30:00.000Z"
+        },
+        {
+            "id": null,
+            "amountInMl": 200.0,
+            "createdAt": "2024-01-15T12:45:00.000Z"
+        },
+        {
+            "id": null,
+            "amountInMl": 400.0,
+            "createdAt": "2024-01-15T15:00:00.000Z"
+        },
+        {
+            "id": null,
+            "amountInMl": 250.0,
+            "createdAt": "2024-01-15T17:30:00.000Z"
+        },
+        {
+            "id": null,
+            "amountInMl": 300.0,
+            "createdAt": "2024-01-15T20:00:00.000Z"
+        },
+        {
+            "id": null,
+            "amountInMl": 200.0,
+            "createdAt": "2024-01-14T07:30:00.000Z"
+        },
+        {
+            "id": null,
+            "amountInMl": 350.0,
+            "createdAt": "2024-01-14T11:00:00.000Z"
+        },
+        {
+            "id": null,
+            "amountInMl": 250.0,
+            "createdAt": "2024-01-14T14:15:00.000Z"
+        },
+        {
+            "id": null,
+            "amountInMl": 400.0,
+            "createdAt": "2024-01-14T16:45:00.000Z"
+        }
+    ]
+}
