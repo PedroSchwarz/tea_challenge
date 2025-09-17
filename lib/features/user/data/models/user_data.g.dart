@@ -13,6 +13,7 @@ _UserData _$UserDataFromJson(Map<String, dynamic> json) => _UserData(
   proteinGoal: (json['proteinGoal'] as num).toDouble(),
   fatGoal: (json['fatGoal'] as num).toDouble(),
   waterGoal: (json['waterGoal'] as num).toDouble(),
+  wasUpdated: json['wasUpdated'] as bool,
 );
 
 Map<String, dynamic> _$UserDataToJson(_UserData instance) => <String, dynamic>{
@@ -22,4 +23,5 @@ Map<String, dynamic> _$UserDataToJson(_UserData instance) => <String, dynamic>{
   'proteinGoal': instance.proteinGoal,
   'fatGoal': instance.fatGoal,
   'waterGoal': instance.waterGoal,
+  'wasUpdated': instance.wasUpdated,
 };

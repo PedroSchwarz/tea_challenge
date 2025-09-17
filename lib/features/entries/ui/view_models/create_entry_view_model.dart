@@ -60,7 +60,7 @@ class CreateEntryViewModel extends ChangeNotifier {
 
   double get selectedWaterAmount {
     if (_selectedQuantity == WaterQuantity.custom) {
-      return double.tryParse(_waterAmount) ?? 0.0;
+      return (double.tryParse(_waterAmount) ?? 0.0) * 1000;
     }
     return _selectedQuantity.amountInLiters * 1000;
   }
@@ -186,7 +186,7 @@ class CreateEntryViewModel extends ChangeNotifier {
   }
 
   Future<void> _saveWaterRecord() async {
-    final record = WaterRecord(amountInMl: selectedWaterAmount, createdAt: DateTime.now());
+    final record = WaterRecord(amountInMl: selectedWaterAmount);
 
     await waterRecordRepository.insertWaterRecord(record);
   }

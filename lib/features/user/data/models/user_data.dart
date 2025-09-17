@@ -12,6 +12,7 @@ abstract class UserData with _$UserData {
     required double proteinGoal,
     required double fatGoal,
     required double waterGoal,
+    required bool wasUpdated,
   }) = _UserData;
 
   factory UserData.fromJson(Map<String, dynamic> json) => _$UserDataFromJson(json);

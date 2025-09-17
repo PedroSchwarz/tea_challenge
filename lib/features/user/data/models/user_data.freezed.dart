@@ -15,7 +15,7 @@ T _$identity<T>(T value) => value;
 /// @nodoc
 mixin _$UserData {
 
- String get name; double get caloriesGoal; double get carbsGoal; double get proteinGoal; double get fatGoal; double get waterGoal;
+ String get name; double get caloriesGoal; double get carbsGoal; double get proteinGoal; double get fatGoal; double get waterGoal; bool get wasUpdated;
 /// Create a copy of UserData
 /// with the given fields replaced by the non-null parameter values.
 @JsonKey(includeFromJson: false, includeToJson: false)
@@ -28,16 +28,16 @@ $UserDataCopyWith<UserData> get copyWith => _$UserDataCopyWithImpl<UserData>(thi
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is UserData&&(identical(other.name, name) || other.name == name)&&(identical(other.caloriesGoal, caloriesGoal) || other.caloriesGoal == caloriesGoal)&&(identical(other.carbsGoal, carbsGoal) || other.carbsGoal == carbsGoal)&&(identical(other.proteinGoal, proteinGoal) || other.proteinGoal == proteinGoal)&&(identical(other.fatGoal, fatGoal) || other.fatGoal == fatGoal)&&(identical(other.waterGoal, waterGoal) || other.waterGoal == waterGoal));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is UserData&&(identical(other.name, name) || other.name == name)&&(identical(other.caloriesGoal, caloriesGoal) || other.caloriesGoal == caloriesGoal)&&(identical(other.carbsGoal, carbsGoal) || other.carbsGoal == carbsGoal)&&(identical(other.proteinGoal, proteinGoal) || other.proteinGoal == proteinGoal)&&(identical(other.fatGoal, fatGoal) || other.fatGoal == fatGoal)&&(identical(other.waterGoal, waterGoal) || other.waterGoal == waterGoal)&&(identical(other.wasUpdated, wasUpdated) || other.wasUpdated == wasUpdated));
 }
 
 @JsonKey(includeFromJson: false, includeToJson: false)
 @override
-int get hashCode => Object.hash(runtimeType,name,caloriesGoal,carbsGoal,proteinGoal,fatGoal,waterGoal);
+int get hashCode => Object.hash(runtimeType,name,caloriesGoal,carbsGoal,proteinGoal,fatGoal,waterGoal,wasUpdated);
 
 @override
 String toString() {
-  return 'UserData(name: $name, caloriesGoal: $caloriesGoal, carbsGoal: $carbsGoal, proteinGoal: $proteinGoal, fatGoal: $fatGoal, waterGoal: $waterGoal)';
+  return 'UserData(name: $name, caloriesGoal: $caloriesGoal, carbsGoal: $carbsGoal, proteinGoal: $proteinGoal, fatGoal: $fatGoal, waterGoal: $waterGoal, wasUpdated: $wasUpdated)';
 }
 
 
@@ -48,7 +48,7 @@ abstract mixin class $UserDataCopyWith<$Res>  {
   factory $UserDataCopyWith(UserData value, $Res Function(UserData) _then) = _$UserDataCopyWithImpl;
 @useResult
 $Res call({
- String name, double caloriesGoal, double carbsGoal, double proteinGoal, double fatGoal, double waterGoal
+ String name, double caloriesGoal, double carbsGoal, double proteinGoal, double fatGoal, double waterGoal, bool wasUpdated
 });
 
 
@@ -65,7 +65,7 @@ class _$UserDataCopyWithImpl<$Res>
 
 /// Create a copy of UserData
 /// with the given fields replaced by the non-null parameter values.
-@pragma('vm:prefer-inline') @override $Res call({Object? name = null,Object? caloriesGoal = null,Object? carbsGoal = null,Object? proteinGoal = null,Object? fatGoal = null,Object? waterGoal = null,}) {
+@pragma('vm:prefer-inline') @override $Res call({Object? name = null,Object? caloriesGoal = null,Object? carbsGoal = null,Object? proteinGoal = null,Object? fatGoal = null,Object? waterGoal = null,Object? wasUpdated = null,}) {
   return _then(_self.copyWith(
 name: null == name ? _self.name : name // ignore: cast_nullable_to_non_nullable
 as String,caloriesGoal: null == caloriesGoal ? _self.caloriesGoal : caloriesGoal // ignore: cast_nullable_to_non_nullable
@@ -73,7 +73,8 @@ as double,carbsGoal: null == carbsGoal ? _self.carbsGoal : carbsGoal // ignore: 
 as double,proteinGoal: null == proteinGoal ? _self.proteinGoal : proteinGoal // ignore: cast_nullable_to_non_nullable
 as double,fatGoal: null == fatGoal ? _self.fatGoal : fatGoal // ignore: cast_nullable_to_non_nullable
 as double,waterGoal: null == waterGoal ? _self.waterGoal : waterGoal // ignore: cast_nullable_to_non_nullable
-as double,
+as double,wasUpdated: null == wasUpdated ? _self.wasUpdated : wasUpdated // ignore: cast_nullable_to_non_nullable
+as bool,
   ));
 }
 
@@ -158,10 +159,10 @@ return $default(_that);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( String name,  double caloriesGoal,  double carbsGoal,  double proteinGoal,  double fatGoal,  double waterGoal)?  $default,{required TResult orElse(),}) {final _that = this;
+@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( String name,  double caloriesGoal,  double carbsGoal,  double proteinGoal,  double fatGoal,  double waterGoal,  bool wasUpdated)?  $default,{required TResult orElse(),}) {final _that = this;
 switch (_that) {
 case _UserData() when $default != null:
-return $default(_that.name,_that.caloriesGoal,_that.carbsGoal,_that.proteinGoal,_that.fatGoal,_that.waterGoal);case _:
+return $default(_that.name,_that.caloriesGoal,_that.carbsGoal,_that.proteinGoal,_that.fatGoal,_that.waterGoal,_that.wasUpdated);case _:
   return orElse();
 
 }
@@ -179,10 +180,10 @@ return $default(_that.name,_that.caloriesGoal,_that.carbsGoal,_that.proteinGoal,
 /// }
 /// ```
 
-@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( String name,  double caloriesGoal,  double carbsGoal,  double proteinGoal,  double fatGoal,  double waterGoal)  $default,) {final _that = this;
+@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( String name,  double caloriesGoal,  double carbsGoal,  double proteinGoal,  double fatGoal,  double waterGoal,  bool wasUpdated)  $default,) {final _that = this;
 switch (_that) {
 case _UserData():
-return $default(_that.name,_that.caloriesGoal,_that.carbsGoal,_that.proteinGoal,_that.fatGoal,_that.waterGoal);case _:
+return $default(_that.name,_that.caloriesGoal,_that.carbsGoal,_that.proteinGoal,_that.fatGoal,_that.waterGoal,_that.wasUpdated);case _:
   throw StateError('Unexpected subclass');
 
 }
@@ -199,10 +200,10 @@ return $default(_that.name,_that.caloriesGoal,_that.carbsGoal,_that.proteinGoal,
 /// }
 /// ```
 
-@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( String name,  double caloriesGoal,  double carbsGoal,  double proteinGoal,  double fatGoal,  double waterGoal)?  $default,) {final _that = this;
+@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( String name,  double caloriesGoal,  double carbsGoal,  double proteinGoal,  double fatGoal,  double waterGoal,  bool wasUpdated)?  $default,) {final _that = this;
 switch (_that) {
 case _UserData() when $default != null:
-return $default(_that.name,_that.caloriesGoal,_that.carbsGoal,_that.proteinGoal,_that.fatGoal,_that.waterGoal);case _:
+return $default(_that.name,_that.caloriesGoal,_that.carbsGoal,_that.proteinGoal,_that.fatGoal,_that.waterGoal,_that.wasUpdated);case _:
   return null;
 
 }
@@ -214,7 +215,7 @@ return $default(_that.name,_that.caloriesGoal,_that.carbsGoal,_that.proteinGoal,
 @JsonSerializable()
 
 class _UserData implements UserData {
-  const _UserData({required this.name, required this.caloriesGoal, required this.carbsGoal, required this.proteinGoal, required this.fatGoal, required this.waterGoal});
+  const _UserData({required this.name, required this.caloriesGoal, required this.carbsGoal, required this.proteinGoal, required this.fatGoal, required this.waterGoal, required this.wasUpdated});
   factory _UserData.fromJson(Map<String, dynamic> json) => _$UserDataFromJson(json);
 
 @override final  String name;
@@ -223,6 +224,7 @@ class _UserData implements UserData {
 @override final  double proteinGoal;
 @override final  double fatGoal;
 @override final  double waterGoal;
+@override final  bool wasUpdated;
 
 /// Create a copy of UserData
 /// with the given fields replaced by the non-null parameter values.
@@ -237,16 +239,16 @@ Map<String, dynamic> toJson() {
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is _UserData&&(identical(other.name, name) || other.name == name)&&(identical(other.caloriesGoal, caloriesGoal) || other.caloriesGoal == caloriesGoal)&&(identical(other.carbsGoal, carbsGoal) || other.carbsGoal == carbsGoal)&&(identical(other.proteinGoal, proteinGoal) || other.proteinGoal == proteinGoal)&&(identical(other.fatGoal, fatGoal) || other.fatGoal == fatGoal)&&(identical(other.waterGoal, waterGoal) || other.waterGoal == waterGoal));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is _UserData&&(identical(other.name, name) || other.name == name)&&(identical(other.caloriesGoal, caloriesGoal) || other.caloriesGoal == caloriesGoal)&&(identical(other.carbsGoal, carbsGoal) || other.carbsGoal == carbsGoal)&&(identical(other.proteinGoal, proteinGoal) || other.proteinGoal == proteinGoal)&&(identical(other.fatGoal, fatGoal) || other.fatGoal == fatGoal)&&(identical(other.waterGoal, waterGoal) || other.waterGoal == waterGoal)&&(identical(other.wasUpdated, wasUpdated) || other.wasUpdated == wasUpdated));
 }
 
 @JsonKey(includeFromJson: false, includeToJson: false)
 @override
-int get hashCode => Object.hash(runtimeType,name,caloriesGoal,carbsGoal,proteinGoal,fatGoal,waterGoal);
+int get hashCode => Object.hash(runtimeType,name,caloriesGoal,carbsGoal,proteinGoal,fatGoal,waterGoal,wasUpdated);
 
 @override
 String toString() {
-  return 'UserData(name: $name, caloriesGoal: $caloriesGoal, carbsGoal: $carbsGoal, proteinGoal: $proteinGoal, fatGoal: $fatGoal, waterGoal: $waterGoal)';
+  return 'UserData(name: $name, caloriesGoal: $caloriesGoal, carbsGoal: $carbsGoal, proteinGoal: $proteinGoal, fatGoal: $fatGoal, waterGoal: $waterGoal, wasUpdated: $wasUpdated)';
 }
 
 
@@ -257,7 +259,7 @@ abstract mixin class _$UserDataCopyWith<$Res> implements $UserDataCopyWith<$Res>
   factory _$UserDataCopyWith(_UserData value, $Res Function(_UserData) _then) = __$UserDataCopyWithImpl;
 @override @useResult
 $Res call({
- String name, double caloriesGoal, double carbsGoal, double proteinGoal, double fatGoal, double waterGoal
+ String name, double caloriesGoal, double carbsGoal, double proteinGoal, double fatGoal, double waterGoal, bool wasUpdated
 });
 
 
@@ -274,7 +276,7 @@ class __$UserDataCopyWithImpl<$Res>
 
 /// Create a copy of UserData
 /// with the given fields replaced by the non-null parameter values.
-@override @pragma('vm:prefer-inline') $Res call({Object? name = null,Object? caloriesGoal = null,Object? carbsGoal = null,Object? proteinGoal = null,Object? fatGoal = null,Object? waterGoal = null,}) {
+@override @pragma('vm:prefer-inline') $Res call({Object? name = null,Object? caloriesGoal = null,Object? carbsGoal = null,Object? proteinGoal = null,Object? fatGoal = null,Object? waterGoal = null,Object? wasUpdated = null,}) {
   return _then(_UserData(
 name: null == name ? _self.name : name // ignore: cast_nullable_to_non_nullable
 as String,caloriesGoal: null == caloriesGoal ? _self.caloriesGoal : caloriesGoal // ignore: cast_nullable_to_non_nullable
@@ -282,7 +284,8 @@ as double,carbsGoal: null == carbsGoal ? _self.carbsGoal : carbsGoal // ignore: 
 as double,proteinGoal: null == proteinGoal ? _self.proteinGoal : proteinGoal // ignore: cast_nullable_to_non_nullable
 as double,fatGoal: null == fatGoal ? _self.fatGoal : fatGoal // ignore: cast_nullable_to_non_nullable
 as double,waterGoal: null == waterGoal ? _self.waterGoal : waterGoal // ignore: cast_nullable_to_non_nullable
-as double,
+as double,wasUpdated: null == wasUpdated ? _self.wasUpdated : wasUpdated // ignore: cast_nullable_to_non_nullable
+as bool,
   ));
 }
 
