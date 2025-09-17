@@ -281,7 +281,7 @@ class _WaterPainter extends CustomPainter {
     final gradient = LinearGradient(
       begin: Alignment.topCenter,
       end: Alignment.bottomCenter,
-      colors: [waterColor.withOpacity(0.8), waterColor, waterColor.withOpacity(0.9)],
+      colors: [waterColor.withValues(alpha: 0.8), waterColor, waterColor.withValues(alpha: 0.9)],
       stops: const [0.0, 0.5, 1.0],
     );
 
@@ -293,7 +293,7 @@ class _WaterPainter extends CustomPainter {
     // Add some highlights for realism
     final highlightPaint =
         Paint()
-          ..color = Colors.white.withOpacity(0.3)
+          ..color = Colors.white.withValues(alpha: 0.3)
           ..style = PaintingStyle.fill;
 
     // Top highlight
