@@ -4,8 +4,10 @@ import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
 import 'package:tea_challenge/app/dependencies/locator.dart';
 import 'package:tea_challenge/app/theming/app_spacing.dart';
+import 'package:tea_challenge/features/entries/data/models/entry.dart';
 import 'package:tea_challenge/features/entries/data/models/water_progress.dart';
 import 'package:tea_challenge/features/entries/entries.dart';
+import 'package:tea_challenge/features/entries/ui/view_models/entry_type.dart';
 import 'package:tea_challenge/features/home/ui/view_models/home_view_model.dart';
 import 'package:tea_challenge/features/home/ui/views/components/main_progress_ring.dart';
 import 'package:tea_challenge/features/home/ui/views/components/secondary_progress_ring.dart';
@@ -243,13 +245,26 @@ class _HomeScreenState extends State<HomeScreen> {
                     itemCount: viewModel.entries.length,
                     itemBuilder: (context, index) {
                       final entry = viewModel.entries[index];
+
                       return ListTile(
                         leading: CircleAvatar(
-                          backgroundColor: entry.type == 'Water' ? Colors.blue : Colors.green,
-                          child: Icon(entry.type == 'Water' ? Icons.water_drop : Icons.restaurant, color: Colors.white),
+                          backgroundColor: switch (entry) {
+                            WaterEntry() => Colors.blue,
+                            FoodEntry() => Colors.green,
+                            _ => Colors.grey,
+                          },
+                          child: Icon(switch (entry) {
+                            WaterEntry() => Icons.water_drop,
+                            FoodEntry() => Icons.restaurant,
+                            _ => Icons.question_mark,
+                          }, color: Colors.white),
                         ),
                         title: Text(entry.displayName),
-                        subtitle: Text(entry.type),
+                        subtitle: Text(switch (entry) {
+                          WaterEntry() => 'Water',
+                          FoodEntry() => 'Food',
+                          _ => 'Unknown',
+                        }),
                         trailing:
                             entry.createdAt != null
                                 ? Text(
@@ -257,6 +272,21 @@ class _HomeScreenState extends State<HomeScreen> {
                                   style: theme.textTheme.bodySmall,
                                 )
                                 : null,
+                        onTap: () {
+                          if (context.mounted) {
+                            context.goNamed(
+                              CreateEntryScreen.routeName,
+                              queryParameters: {
+                                'id': entry.id.toString(),
+                                'type': switch (entry) {
+                                  WaterEntry() => EntryType.water.value,
+                                  FoodEntry() => EntryType.food.value,
+                                  _ => EntryType.food.value,
+                                },
+                              },
+                            );
+                          }
+                        },
                       );
                     },
                   ),
@@ -268,7 +298,7 @@ class _HomeScreenState extends State<HomeScreen> {
         floatingActionButton: FloatingActionButton.extended(
           onPressed: () async {
             if (context.mounted) {
-              final _ = await context.pushNamed(CreateRetryScreen.routeName);
+              final _ = await context.pushNamed(CreateEntryScreen.routeName);
               _viewModel.refresh();
             }
           },

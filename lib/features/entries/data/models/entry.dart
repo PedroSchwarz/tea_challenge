@@ -30,11 +30,11 @@ abstract class Entry with _$Entry {
     };
   }
 
-  String get type {
+  int get id {
     return switch (this) {
-      FoodEntry(foodRecord: final _) => 'Food',
-      WaterEntry(waterRecord: final _) => 'Water',
-      _ => '',
+      FoodEntry(foodRecord: final foodRecord) => foodRecord.id ?? 0,
+      WaterEntry(waterRecord: final waterRecord) => waterRecord.id ?? 0,
+      _ => 0,
     };
   }
 }

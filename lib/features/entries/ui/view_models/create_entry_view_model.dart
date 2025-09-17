@@ -84,6 +84,36 @@ class CreateEntryViewModel extends ChangeNotifier {
   }
 
   // Actions
+
+  Future<void> load({required int id, required EntryType type}) async {
+    _selectedType = type;
+    if (type == EntryType.food) {
+      await _loadFoodRecord(id);
+    } else {
+      await _loadWaterRecord(id);
+    }
+    notifyListeners();
+  }
+
+  Future<void> _loadFoodRecord(int id) async {
+    final record = await foodRecordRepository.getFoodRecord(id);
+    if (record != null) {
+      _name = record.name;
+      _caloriesPerPortion = record.caloriesPerPortion.toString();
+      _portionSize = record.portionSize.toString();
+      _carbs = record.carbs.toString();
+      _protein = record.protein.toString();
+      _fat = record.fat.toString();
+    }
+  }
+
+  Future<void> _loadWaterRecord(int id) async {
+    final record = await waterRecordRepository.getWaterRecord(id);
+    if (record != null) {
+      _waterAmount = record.amountInMl.toString();
+    }
+  }
+
   void setSelectedType(String type) {
     final entryType = EntryType.fromString(type);
     if (_selectedType != entryType) {

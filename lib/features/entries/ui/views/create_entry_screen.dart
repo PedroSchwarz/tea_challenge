@@ -9,16 +9,18 @@ import 'package:tea_challenge/features/entries/ui/view_models/entry_type.dart';
 import 'package:tea_challenge/features/entries/ui/views/forms/food_entry_form.dart';
 import 'package:tea_challenge/features/entries/ui/views/forms/water_entry_form.dart';
 
-class CreateRetryScreen extends StatefulWidget {
-  const CreateRetryScreen({super.key});
+class CreateEntryScreen extends StatefulWidget {
+  const CreateEntryScreen({super.key, this.id, this.type});
+  final int? id;
+  final EntryType? type;
 
   static const String routeName = 'create_retry';
 
   @override
-  CreateRetryScreenState createState() => CreateRetryScreenState();
+  CreateEntryScreenState createState() => CreateEntryScreenState();
 }
 
-class CreateRetryScreenState extends State<CreateRetryScreen> {
+class CreateEntryScreenState extends State<CreateEntryScreen> {
   final CreateEntryViewModel _viewModel = getIt<CreateEntryViewModel>();
 
   final _foodFormKey = GlobalKey<FormState>();
@@ -34,7 +36,12 @@ class CreateRetryScreenState extends State<CreateRetryScreen> {
   @override
   void initState() {
     super.initState();
+    if (widget.id != null && widget.type != null) {
+      _viewModel.load(id: widget.id!, type: widget.type!);
+    }
     _setupControllers();
+    _initializeControllers();
+    _initializeWaterController();
   }
 
   void _setupControllers() {
@@ -45,6 +52,19 @@ class CreateRetryScreenState extends State<CreateRetryScreen> {
     _proteinController.addListener(() => _viewModel.setProtein(_proteinController.text));
     _fatController.addListener(() => _viewModel.setFat(_fatController.text));
     _waterController.addListener(() => _viewModel.setWaterAmount(_waterController.text));
+  }
+
+  void _initializeControllers() {
+    _nameController.text = _viewModel.name;
+    _caloriesPerPortionController.text = _viewModel.caloriesPerPortion;
+    _portionSizeController.text = _viewModel.portionSize;
+    _carbsController.text = _viewModel.carbs;
+    _proteinController.text = _viewModel.protein;
+    _fatController.text = _viewModel.fat;
+  }
+
+  void _initializeWaterController() {
+    _waterController.text = _viewModel.waterAmount;
   }
 
   @override

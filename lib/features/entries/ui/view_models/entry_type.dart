@@ -26,8 +26,4 @@ enum WaterQuantity {
   static WaterQuantity fromString(String value) {
     return WaterQuantity.values.firstWhere((quantity) => quantity.label == value, orElse: () => WaterQuantity.halfLiter);
   }
-
-  // static List<WaterQuantity> get predefinedQuantities {
-  //   return WaterQuantity.values.where((quantity) => quantity != WaterQuantity.custom).toList();
-  // }
 }
