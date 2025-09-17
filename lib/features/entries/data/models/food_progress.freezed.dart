@@ -15,7 +15,7 @@ T _$identity<T>(T value) => value;
 /// @nodoc
 mixin _$FoodProgress {
 
- double get calories; double get carbs; double get protein; double get fat;
+ double get totalCalories; double get totalCarbs; double get totalProtein; double get totalFat; double get caloriesGoal; double get carbsGoal; double get proteinGoal; double get fatGoal;
 /// Create a copy of FoodProgress
 /// with the given fields replaced by the non-null parameter values.
 @JsonKey(includeFromJson: false, includeToJson: false)
@@ -28,16 +28,16 @@ $FoodProgressCopyWith<FoodProgress> get copyWith => _$FoodProgressCopyWithImpl<F
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is FoodProgress&&(identical(other.calories, calories) || other.calories == calories)&&(identical(other.carbs, carbs) || other.carbs == carbs)&&(identical(other.protein, protein) || other.protein == protein)&&(identical(other.fat, fat) || other.fat == fat));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is FoodProgress&&(identical(other.totalCalories, totalCalories) || other.totalCalories == totalCalories)&&(identical(other.totalCarbs, totalCarbs) || other.totalCarbs == totalCarbs)&&(identical(other.totalProtein, totalProtein) || other.totalProtein == totalProtein)&&(identical(other.totalFat, totalFat) || other.totalFat == totalFat)&&(identical(other.caloriesGoal, caloriesGoal) || other.caloriesGoal == caloriesGoal)&&(identical(other.carbsGoal, carbsGoal) || other.carbsGoal == carbsGoal)&&(identical(other.proteinGoal, proteinGoal) || other.proteinGoal == proteinGoal)&&(identical(other.fatGoal, fatGoal) || other.fatGoal == fatGoal));
 }
 
 @JsonKey(includeFromJson: false, includeToJson: false)
 @override
-int get hashCode => Object.hash(runtimeType,calories,carbs,protein,fat);
+int get hashCode => Object.hash(runtimeType,totalCalories,totalCarbs,totalProtein,totalFat,caloriesGoal,carbsGoal,proteinGoal,fatGoal);
 
 @override
 String toString() {
-  return 'FoodProgress(calories: $calories, carbs: $carbs, protein: $protein, fat: $fat)';
+  return 'FoodProgress(totalCalories: $totalCalories, totalCarbs: $totalCarbs, totalProtein: $totalProtein, totalFat: $totalFat, caloriesGoal: $caloriesGoal, carbsGoal: $carbsGoal, proteinGoal: $proteinGoal, fatGoal: $fatGoal)';
 }
 
 
@@ -48,7 +48,7 @@ abstract mixin class $FoodProgressCopyWith<$Res>  {
   factory $FoodProgressCopyWith(FoodProgress value, $Res Function(FoodProgress) _then) = _$FoodProgressCopyWithImpl;
 @useResult
 $Res call({
- double calories, double carbs, double protein, double fat
+ double totalCalories, double totalCarbs, double totalProtein, double totalFat, double caloriesGoal, double carbsGoal, double proteinGoal, double fatGoal
 });
 
 
@@ -65,12 +65,16 @@ class _$FoodProgressCopyWithImpl<$Res>
 
 /// Create a copy of FoodProgress
 /// with the given fields replaced by the non-null parameter values.
-@pragma('vm:prefer-inline') @override $Res call({Object? calories = null,Object? carbs = null,Object? protein = null,Object? fat = null,}) {
+@pragma('vm:prefer-inline') @override $Res call({Object? totalCalories = null,Object? totalCarbs = null,Object? totalProtein = null,Object? totalFat = null,Object? caloriesGoal = null,Object? carbsGoal = null,Object? proteinGoal = null,Object? fatGoal = null,}) {
   return _then(_self.copyWith(
-calories: null == calories ? _self.calories : calories // ignore: cast_nullable_to_non_nullable
-as double,carbs: null == carbs ? _self.carbs : carbs // ignore: cast_nullable_to_non_nullable
-as double,protein: null == protein ? _self.protein : protein // ignore: cast_nullable_to_non_nullable
-as double,fat: null == fat ? _self.fat : fat // ignore: cast_nullable_to_non_nullable
+totalCalories: null == totalCalories ? _self.totalCalories : totalCalories // ignore: cast_nullable_to_non_nullable
+as double,totalCarbs: null == totalCarbs ? _self.totalCarbs : totalCarbs // ignore: cast_nullable_to_non_nullable
+as double,totalProtein: null == totalProtein ? _self.totalProtein : totalProtein // ignore: cast_nullable_to_non_nullable
+as double,totalFat: null == totalFat ? _self.totalFat : totalFat // ignore: cast_nullable_to_non_nullable
+as double,caloriesGoal: null == caloriesGoal ? _self.caloriesGoal : caloriesGoal // ignore: cast_nullable_to_non_nullable
+as double,carbsGoal: null == carbsGoal ? _self.carbsGoal : carbsGoal // ignore: cast_nullable_to_non_nullable
+as double,proteinGoal: null == proteinGoal ? _self.proteinGoal : proteinGoal // ignore: cast_nullable_to_non_nullable
+as double,fatGoal: null == fatGoal ? _self.fatGoal : fatGoal // ignore: cast_nullable_to_non_nullable
 as double,
   ));
 }
@@ -156,10 +160,10 @@ return $default(_that);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( double calories,  double carbs,  double protein,  double fat)?  $default,{required TResult orElse(),}) {final _that = this;
+@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( double totalCalories,  double totalCarbs,  double totalProtein,  double totalFat,  double caloriesGoal,  double carbsGoal,  double proteinGoal,  double fatGoal)?  $default,{required TResult orElse(),}) {final _that = this;
 switch (_that) {
 case _FoodProgress() when $default != null:
-return $default(_that.calories,_that.carbs,_that.protein,_that.fat);case _:
+return $default(_that.totalCalories,_that.totalCarbs,_that.totalProtein,_that.totalFat,_that.caloriesGoal,_that.carbsGoal,_that.proteinGoal,_that.fatGoal);case _:
   return orElse();
 
 }
@@ -177,10 +181,10 @@ return $default(_that.calories,_that.carbs,_that.protein,_that.fat);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( double calories,  double carbs,  double protein,  double fat)  $default,) {final _that = this;
+@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( double totalCalories,  double totalCarbs,  double totalProtein,  double totalFat,  double caloriesGoal,  double carbsGoal,  double proteinGoal,  double fatGoal)  $default,) {final _that = this;
 switch (_that) {
 case _FoodProgress():
-return $default(_that.calories,_that.carbs,_that.protein,_that.fat);case _:
+return $default(_that.totalCalories,_that.totalCarbs,_that.totalProtein,_that.totalFat,_that.caloriesGoal,_that.carbsGoal,_that.proteinGoal,_that.fatGoal);case _:
   throw StateError('Unexpected subclass');
 
 }
@@ -197,10 +201,10 @@ return $default(_that.calories,_that.carbs,_that.protein,_that.fat);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( double calories,  double carbs,  double protein,  double fat)?  $default,) {final _that = this;
+@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( double totalCalories,  double totalCarbs,  double totalProtein,  double totalFat,  double caloriesGoal,  double carbsGoal,  double proteinGoal,  double fatGoal)?  $default,) {final _that = this;
 switch (_that) {
 case _FoodProgress() when $default != null:
-return $default(_that.calories,_that.carbs,_that.protein,_that.fat);case _:
+return $default(_that.totalCalories,_that.totalCarbs,_that.totalProtein,_that.totalFat,_that.caloriesGoal,_that.carbsGoal,_that.proteinGoal,_that.fatGoal);case _:
   return null;
 
 }
@@ -211,14 +215,18 @@ return $default(_that.calories,_that.carbs,_that.protein,_that.fat);case _:
 /// @nodoc
 @JsonSerializable()
 
-class _FoodProgress implements FoodProgress {
-  const _FoodProgress({required this.calories, required this.carbs, required this.protein, required this.fat});
+class _FoodProgress extends FoodProgress {
+  const _FoodProgress({required this.totalCalories, required this.totalCarbs, required this.totalProtein, required this.totalFat, required this.caloriesGoal, required this.carbsGoal, required this.proteinGoal, required this.fatGoal}): super._();
   factory _FoodProgress.fromJson(Map<String, dynamic> json) => _$FoodProgressFromJson(json);
 
-@override final  double calories;
-@override final  double carbs;
-@override final  double protein;
-@override final  double fat;
+@override final  double totalCalories;
+@override final  double totalCarbs;
+@override final  double totalProtein;
+@override final  double totalFat;
+@override final  double caloriesGoal;
+@override final  double carbsGoal;
+@override final  double proteinGoal;
+@override final  double fatGoal;
 
 /// Create a copy of FoodProgress
 /// with the given fields replaced by the non-null parameter values.
@@ -233,16 +241,16 @@ Map<String, dynamic> toJson() {
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is _FoodProgress&&(identical(other.calories, calories) || other.calories == calories)&&(identical(other.carbs, carbs) || other.carbs == carbs)&&(identical(other.protein, protein) || other.protein == protein)&&(identical(other.fat, fat) || other.fat == fat));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is _FoodProgress&&(identical(other.totalCalories, totalCalories) || other.totalCalories == totalCalories)&&(identical(other.totalCarbs, totalCarbs) || other.totalCarbs == totalCarbs)&&(identical(other.totalProtein, totalProtein) || other.totalProtein == totalProtein)&&(identical(other.totalFat, totalFat) || other.totalFat == totalFat)&&(identical(other.caloriesGoal, caloriesGoal) || other.caloriesGoal == caloriesGoal)&&(identical(other.carbsGoal, carbsGoal) || other.carbsGoal == carbsGoal)&&(identical(other.proteinGoal, proteinGoal) || other.proteinGoal == proteinGoal)&&(identical(other.fatGoal, fatGoal) || other.fatGoal == fatGoal));
 }
 
 @JsonKey(includeFromJson: false, includeToJson: false)
 @override
-int get hashCode => Object.hash(runtimeType,calories,carbs,protein,fat);
+int get hashCode => Object.hash(runtimeType,totalCalories,totalCarbs,totalProtein,totalFat,caloriesGoal,carbsGoal,proteinGoal,fatGoal);
 
 @override
 String toString() {
-  return 'FoodProgress(calories: $calories, carbs: $carbs, protein: $protein, fat: $fat)';
+  return 'FoodProgress(totalCalories: $totalCalories, totalCarbs: $totalCarbs, totalProtein: $totalProtein, totalFat: $totalFat, caloriesGoal: $caloriesGoal, carbsGoal: $carbsGoal, proteinGoal: $proteinGoal, fatGoal: $fatGoal)';
 }
 
 
@@ -253,7 +261,7 @@ abstract mixin class _$FoodProgressCopyWith<$Res> implements $FoodProgressCopyWi
   factory _$FoodProgressCopyWith(_FoodProgress value, $Res Function(_FoodProgress) _then) = __$FoodProgressCopyWithImpl;
 @override @useResult
 $Res call({
- double calories, double carbs, double protein, double fat
+ double totalCalories, double totalCarbs, double totalProtein, double totalFat, double caloriesGoal, double carbsGoal, double proteinGoal, double fatGoal
 });
 
 
@@ -270,12 +278,16 @@ class __$FoodProgressCopyWithImpl<$Res>
 
 /// Create a copy of FoodProgress
 /// with the given fields replaced by the non-null parameter values.
-@override @pragma('vm:prefer-inline') $Res call({Object? calories = null,Object? carbs = null,Object? protein = null,Object? fat = null,}) {
+@override @pragma('vm:prefer-inline') $Res call({Object? totalCalories = null,Object? totalCarbs = null,Object? totalProtein = null,Object? totalFat = null,Object? caloriesGoal = null,Object? carbsGoal = null,Object? proteinGoal = null,Object? fatGoal = null,}) {
   return _then(_FoodProgress(
-calories: null == calories ? _self.calories : calories // ignore: cast_nullable_to_non_nullable
-as double,carbs: null == carbs ? _self.carbs : carbs // ignore: cast_nullable_to_non_nullable
-as double,protein: null == protein ? _self.protein : protein // ignore: cast_nullable_to_non_nullable
-as double,fat: null == fat ? _self.fat : fat // ignore: cast_nullable_to_non_nullable
+totalCalories: null == totalCalories ? _self.totalCalories : totalCalories // ignore: cast_nullable_to_non_nullable
+as double,totalCarbs: null == totalCarbs ? _self.totalCarbs : totalCarbs // ignore: cast_nullable_to_non_nullable
+as double,totalProtein: null == totalProtein ? _self.totalProtein : totalProtein // ignore: cast_nullable_to_non_nullable
+as double,totalFat: null == totalFat ? _self.totalFat : totalFat // ignore: cast_nullable_to_non_nullable
+as double,caloriesGoal: null == caloriesGoal ? _self.caloriesGoal : caloriesGoal // ignore: cast_nullable_to_non_nullable
+as double,carbsGoal: null == carbsGoal ? _self.carbsGoal : carbsGoal // ignore: cast_nullable_to_non_nullable
+as double,proteinGoal: null == proteinGoal ? _self.proteinGoal : proteinGoal // ignore: cast_nullable_to_non_nullable
+as double,fatGoal: null == fatGoal ? _self.fatGoal : fatGoal // ignore: cast_nullable_to_non_nullable
 as double,
   ));
 }
