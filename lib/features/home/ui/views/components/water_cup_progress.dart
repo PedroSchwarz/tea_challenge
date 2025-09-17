@@ -166,7 +166,7 @@ class _WaterCupProgressState extends State<WaterCupProgress> with TickerProvider
   }
 
   Widget _buildCupOutline(ThemeData theme, double size) {
-    return CustomPaint(size: Size(size, size), painter: _CupOutlinePainter(color: theme.colorScheme.outline.withValues(alpha: 0.3)));
+    return CustomPaint(size: Size(size, size), painter: _CupOutlinePainter(color: theme.colorScheme.primary.withValues(alpha: 0.15)));
   }
 }
 
@@ -209,7 +209,7 @@ class _CupOutlinePainter extends CustomPainter {
         Paint()
           ..color = color
           ..style = PaintingStyle.stroke
-          ..strokeWidth = 3.0;
+          ..strokeWidth = 15.0;
 
     final path = Path();
     final width = size.width;

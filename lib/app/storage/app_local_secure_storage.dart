@@ -43,4 +43,4 @@ class AppLocalStorageImpl implements AppLocalStorage {
   }
 }
 
-enum LocalStorageKey { userData }
+enum LocalStorageKey { userData, seedDataInitialized }

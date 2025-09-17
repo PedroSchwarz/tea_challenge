@@ -1,8 +1,11 @@
+export 'data/data_sources/entries_seed_local_data_source.dart';
+export 'data/data_sources/entries_seed_remote_data_source.dart';
 export 'data/data_sources/food_local_data_source.dart';
 export 'data/data_sources/water_local_data_source.dart';
 export 'data/models/food_progress.dart';
 export 'data/models/food_record.dart';
 export 'data/models/water_record.dart';
+export 'data/repositories/entries_seed_repository.dart';
 export 'data/repositories/food_record_repository.dart';
 export 'data/repositories/water_record_repository.dart';
 export 'data/tables/food_record_entry.dart';
