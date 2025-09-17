@@ -66,27 +66,37 @@ class HomeViewModel extends ChangeNotifier {
   List<FoodRecord> _foodRecords = [];
   List<WaterRecord> _waterRecords = [];
   HomeFilterType _selectedSegment = HomeFilterType.all;
-  List<Entry> _entries = [];
+  final Map<DateTime, List<Entry>> _entriesByDate = {};
   bool _showDeleteEntryDialog = false;
   Entry? _entryToDelete;
   bool _showUndoDeleteEntry = false;
   List<HistoryData> _historyData = [];
   DateTime _selectedDate = DateUtils.dateOnly(DateTime.now());
 
+  // Cached data for last 3 days
+  final Map<DateTime, List<FoodRecord>> _cachedFoodRecords = {};
+  final Map<DateTime, List<WaterRecord>> _cachedWaterRecords = {};
+  final Map<DateTime, FoodProgress> _cachedFoodProgress = {};
+  final Map<DateTime, WaterProgress> _cachedWaterProgress = {};
+
   // Getters
   bool get isLoading => _isLoading;
   bool get isRefreshing => _isRefreshing;
   UserData get userData => _userData;
-  FoodProgress get foodProgress => _foodProgress;
-  WaterProgress get waterProgress => _waterProgress;
-  List<FoodRecord> get foodRecords => _foodRecords;
-  List<WaterRecord> get waterRecords => _waterRecords;
+  FoodProgress get foodProgress => _cachedFoodProgress[_selectedDate] ?? _foodProgress;
+  WaterProgress get waterProgress => _cachedWaterProgress[_selectedDate] ?? _waterProgress;
+  List<FoodRecord> get foodRecords => _cachedFoodRecords[_selectedDate] ?? _foodRecords;
+  List<WaterRecord> get waterRecords => _cachedWaterRecords[_selectedDate] ?? _waterRecords;
   HomeFilterType get selectedSegment => _selectedSegment;
-  List<Entry> get entries => switch (_selectedSegment) {
-    HomeFilterType.water => _waterRecords.map(Entry.water).toList(),
-    HomeFilterType.food => _foodRecords.map(Entry.food).toList(),
-    HomeFilterType.all => _entries,
-  };
+  List<Entry> get entries {
+    final selectedEntries = _entriesByDate[_selectedDate] ?? [];
+    return switch (_selectedSegment) {
+      HomeFilterType.water => selectedEntries.whereType<WaterEntry>().toList(),
+      HomeFilterType.food => selectedEntries.whereType<FoodEntry>().toList(),
+      HomeFilterType.all => selectedEntries,
+    };
+  }
+
   Entry? get entryToDelete => _entryToDelete;
   bool get showDeleteEntryDialog => _showDeleteEntryDialog;
   bool get noRecords => entries.isEmpty;
@@ -99,8 +109,9 @@ class HomeViewModel extends ChangeNotifier {
     _isLoading = true;
     notifyListeners();
 
-    await Future.wait([_loadUser(), _loadFoodRecords(), _loadWaterRecords()]);
-    await Future.wait([_loadFoodProgress(), _loadWaterProgress(), _loadEntries(), _loadHistoryData()]);
+    await _loadUser();
+    await _loadLast3DaysData();
+    await _loadHistoryData();
 
     _isLoading = false;
     notifyListeners();
@@ -110,55 +121,76 @@ class HomeViewModel extends ChangeNotifier {
     _isRefreshing = true;
     notifyListeners();
 
-    await Future.wait([_loadUser(), _loadFoodRecords(), _loadWaterRecords()]);
-    await Future.wait([_loadFoodProgress(), _loadWaterProgress(), _loadEntries(), _loadHistoryData()]);
+    await _loadUser();
+    await _loadLast3DaysData();
+    await _loadHistoryData();
 
     _isRefreshing = false;
     notifyListeners();
   }
 
-  Future<void> _loadFoodProgress() async {
+  /// Loads data for the last 3 days and caches it
+  Future<void> _loadLast3DaysData() async {
     try {
+      final now = DateTime.now();
+      final dates = [
+        DateUtils.dateOnly(now),
+        DateUtils.dateOnly(now.subtract(const Duration(days: 1))),
+        DateUtils.dateOnly(now.subtract(const Duration(days: 2))),
+      ];
+
+      // Load data for all 3 days in parallel
+      final requests = dates.map(_loadDataForDate);
+      await Future.wait(requests);
+
+      // Set current data to today's data
+      _foodRecords = _cachedFoodRecords[dates[0]] ?? [];
+      _waterRecords = _cachedWaterRecords[dates[0]] ?? [];
+      _foodProgress = _cachedFoodProgress[dates[0]] ?? _foodProgress;
+      _waterProgress = _cachedWaterProgress[dates[0]] ?? _waterProgress;
+
+      notifyListeners();
+    } catch (e, s) {
+      _logger.severe('Error loading last 3 days data', e, s);
+    }
+  }
+
+  /// Loads all data for a specific date and caches it
+  Future<void> _loadDataForDate(DateTime date) async {
+    try {
+      // Load records
+      final foodRecords = await foodRecordRepository.getFoodRecords(date: date);
+      final waterRecords = await waterRecordRepository.getWaterRecords(date: date);
+
+      // Load progress
       final foodProgress = await foodRecordRepository.getFoodProgressForDate(
-        date: _selectedDate,
+        date: date,
         caloriesGoal: _userData.caloriesGoal,
         carbsGoal: _userData.carbsGoal,
         proteinGoal: _userData.proteinGoal,
         fatGoal: _userData.fatGoal,
       );
 
-      _foodProgress = foodProgress;
-      notifyListeners();
-    } catch (e, s) {
-      _logger.severe('Error loading food progress', e, s);
-    }
-  }
+      final waterProgress = await waterRecordRepository.getWaterProgressForDate(date: date, goalInLiters: _userData.waterGoal);
 
-  Future<void> _loadWaterProgress() async {
-    try {
-      final waterProgress = await waterRecordRepository.getWaterProgressForDate(date: _selectedDate, goalInLiters: _userData.waterGoal);
-      _waterProgress = waterProgress;
-      notifyListeners();
-    } catch (e, s) {
-      _logger.severe('Error loading water progress', e, s);
-    }
-  }
+      // Cache the data
+      _cachedFoodRecords[date] = foodRecords;
+      _cachedWaterRecords[date] = waterRecords;
+      _cachedFoodProgress[date] = foodProgress;
+      _cachedWaterProgress[date] = waterProgress;
 
-  Future<void> _loadFoodRecords() async {
-    try {
-      _foodRecords = await foodRecordRepository.getFoodRecords(date: _selectedDate);
-      notifyListeners();
+      // Create and cache entries
+      final entries = <Entry>[];
+      entries.addAll(foodRecords.map(Entry.food));
+      entries.addAll(waterRecords.map(Entry.water));
+      entries.sort((a, b) {
+        final aDate = a.createdAt ?? DateTime.now();
+        final bDate = b.createdAt ?? DateTime.now();
+        return bDate.compareTo(aDate);
+      });
+      _entriesByDate[date] = entries;
     } catch (e, s) {
-      _logger.severe('Error loading food records', e, s);
-    }
-  }
-
-  Future<void> _loadWaterRecords() async {
-    try {
-      _waterRecords = await waterRecordRepository.getWaterRecords(date: _selectedDate);
-      notifyListeners();
-    } catch (e, s) {
-      _logger.severe('Error loading water records', e, s);
+      _logger.severe('Error loading data for date $date', e, s);
     }
   }
 
@@ -166,22 +198,6 @@ class HomeViewModel extends ChangeNotifier {
     if (_selectedSegment != value) {
       _selectedSegment = value;
       notifyListeners();
-    }
-  }
-
-  Future<void> _loadEntries() async {
-    try {
-      final foodEntries = _foodRecords.map(Entry.food).toList();
-      final waterEntries = _waterRecords.map(Entry.water).toList();
-
-      _entries = [...foodEntries, ...waterEntries];
-
-      // Sort by creation date (most recent first)
-      _sortEntries();
-
-      notifyListeners();
-    } catch (e, s) {
-      _logger.severe('Error loading entries', e, s);
     }
   }
 
@@ -224,7 +240,8 @@ class HomeViewModel extends ChangeNotifier {
           if (foodRecord.id != null) {
             try {
               await foodRecordRepository.deleteFoodRecord(foodRecord.id!);
-              await Future.wait([_loadFoodProgress(), _loadHistoryData()]);
+              await _updateCacheForDate(_selectedDate);
+              await _loadHistoryData();
               setShowUndoDeleteEntry(false);
               resetEntryToDelete();
             } catch (e, s) {
@@ -235,7 +252,8 @@ class HomeViewModel extends ChangeNotifier {
           if (waterRecord.id != null) {
             try {
               await waterRecordRepository.deleteWaterRecord(waterRecord.id!);
-              await Future.wait([_loadWaterProgress(), _loadHistoryData()]);
+              await _updateCacheForDate(_selectedDate);
+              await _loadHistoryData();
               setShowUndoDeleteEntry(false);
               resetEntryToDelete();
             } catch (e, s) {
@@ -247,6 +265,7 @@ class HomeViewModel extends ChangeNotifier {
 
     setShowUndoDeleteEntry(true);
 
+    // Update in-memory progress immediately for instant UI feedback
     switch (entry) {
       case FoodEntry(foodRecord: final foodRecord):
         _foodProgress = _foodProgress.copyWith(
@@ -255,11 +274,37 @@ class HomeViewModel extends ChangeNotifier {
           totalProtein: _foodProgress.totalProtein - foodRecord.protein,
           totalFat: _foodProgress.totalFat - foodRecord.fat,
         );
+        // Update cached progress for selected date
+        final cachedFood = _cachedFoodProgress[_selectedDate];
+        if (cachedFood != null) {
+          _cachedFoodProgress[_selectedDate] = cachedFood.copyWith(
+            totalCalories: cachedFood.totalCalories - foodRecord.caloriesPerPortion * foodRecord.portionSize,
+            totalCarbs: cachedFood.totalCarbs - foodRecord.carbs,
+            totalProtein: cachedFood.totalProtein - foodRecord.protein,
+            totalFat: cachedFood.totalFat - foodRecord.fat,
+          );
+        }
+        // Update cached records for selected date
+        final cachedFoodRecords = _cachedFoodRecords[_selectedDate];
+        if (cachedFoodRecords != null) {
+          _cachedFoodRecords[_selectedDate] = List.of(cachedFoodRecords)..remove(foodRecord);
+        }
       case WaterEntry(waterRecord: final waterRecord):
         _waterProgress = _waterProgress.copyWith(totalAmountInMl: _waterProgress.totalAmountInMl - waterRecord.amountInMl);
+        final cachedWater = _cachedWaterProgress[_selectedDate];
+        if (cachedWater != null) {
+          _cachedWaterProgress[_selectedDate] = cachedWater.copyWith(totalAmountInMl: cachedWater.totalAmountInMl - waterRecord.amountInMl);
+        }
+        final cachedWaterRecords = _cachedWaterRecords[_selectedDate];
+        if (cachedWaterRecords != null) {
+          _cachedWaterRecords[_selectedDate] = List.of(cachedWaterRecords)..remove(waterRecord);
+        }
     }
 
-    _entries.remove(entry);
+    // Update entries for selected date and notify
+    final currentEntries = _entriesByDate[_selectedDate] ?? [];
+    currentEntries.remove(entry);
+    _entriesByDate[_selectedDate] = currentEntries;
     notifyListeners();
   }
 
@@ -271,15 +316,14 @@ class HomeViewModel extends ChangeNotifier {
     final entry = _entryToDelete;
 
     if (entry != null) {
-      _entries.add(entry);
+      // Add entry back to the current date's entries
+      final currentEntries = _entriesByDate[_selectedDate] ?? [];
+      currentEntries.add(entry);
       _sortEntries();
+      _entriesByDate[_selectedDate] = currentEntries;
 
-      switch (entry) {
-        case FoodEntry(foodRecord: final _):
-          _loadFoodProgress();
-        case WaterEntry(waterRecord: final _):
-          _loadWaterProgress();
-      }
+      // Update cache for the current date
+      _updateCacheForDate(_selectedDate);
     }
 
     resetEntryToDelete();
@@ -287,11 +331,61 @@ class HomeViewModel extends ChangeNotifier {
   }
 
   void _sortEntries() {
-    _entries.sort((a, b) {
+    final currentEntries = _entriesByDate[_selectedDate] ?? [];
+    currentEntries.sort((a, b) {
       final aDate = a.createdAt ?? DateTime.now();
       final bDate = b.createdAt ?? DateTime.now();
       return bDate.compareTo(aDate);
     });
+    _entriesByDate[_selectedDate] = currentEntries;
+  }
+
+  /// Updates cache for a specific date by reloading its data
+  Future<void> _updateCacheForDate(DateTime date) async {
+    try {
+      // Load fresh data for the date
+      final foodRecords = await foodRecordRepository.getFoodRecords(date: date);
+      final waterRecords = await waterRecordRepository.getWaterRecords(date: date);
+
+      final foodProgress = await foodRecordRepository.getFoodProgressForDate(
+        date: date,
+        caloriesGoal: _userData.caloriesGoal,
+        carbsGoal: _userData.carbsGoal,
+        proteinGoal: _userData.proteinGoal,
+        fatGoal: _userData.fatGoal,
+      );
+
+      final waterProgress = await waterRecordRepository.getWaterProgressForDate(date: date, goalInLiters: _userData.waterGoal);
+
+      // Update cache
+      _cachedFoodRecords[date] = foodRecords;
+      _cachedWaterRecords[date] = waterRecords;
+      _cachedFoodProgress[date] = foodProgress;
+      _cachedWaterProgress[date] = waterProgress;
+
+      // Update entries
+      final entries = <Entry>[];
+      entries.addAll(foodRecords.map(Entry.food));
+      entries.addAll(waterRecords.map(Entry.water));
+      entries.sort((a, b) {
+        final aDate = a.createdAt ?? DateTime.now();
+        final bDate = b.createdAt ?? DateTime.now();
+        return bDate.compareTo(aDate);
+      });
+      _entriesByDate[date] = entries;
+
+      // Update current data if this is the selected date
+      if (date == _selectedDate) {
+        _foodRecords = foodRecords;
+        _waterRecords = waterRecords;
+        _foodProgress = foodProgress;
+        _waterProgress = waterProgress;
+      }
+
+      notifyListeners();
+    } catch (e, s) {
+      _logger.severe('Error updating cache for date $date', e, s);
+    }
   }
 
   void setShowUndoDeleteEntry(bool value) {
@@ -308,17 +402,17 @@ class HomeViewModel extends ChangeNotifier {
     }
   }
 
-  /// Selects a specific date and loads all data for that date
+  /// Selects a specific date and switches to cached data for that date
   Future<void> selectDate(DateTime date) async {
-    _selectedDate = DateUtils.dateOnly(date);
-    notifyListeners();
+    final normalizedDate = DateUtils.dateOnly(date);
+    _selectedDate = normalizedDate;
 
-    try {
-      await Future.wait([_loadFoodRecords(), _loadWaterRecords()]);
-      await Future.wait([_loadFoodProgress(), _loadWaterProgress(), _loadEntries()]);
-    } catch (e, s) {
-      _logger.severe('Error loading data for selected date', e, s);
+    // If data is not cached, load it
+    if (!_cachedFoodRecords.containsKey(normalizedDate)) {
+      await _loadDataForDate(normalizedDate);
     }
+
+    notifyListeners();
   }
 
   /// Resets to today's date and loads current data
