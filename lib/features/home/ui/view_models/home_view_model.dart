@@ -4,13 +4,11 @@ import 'package:flutter/foundation.dart';
 import 'package:logging/logging.dart';
 import 'package:tea_challenge/features/entries/data/models/entry.dart';
 import 'package:tea_challenge/features/entries/data/models/food_progress.dart';
-import 'package:tea_challenge/features/entries/data/models/food_progress.dart';
 import 'package:tea_challenge/features/entries/data/models/food_record.dart';
 import 'package:tea_challenge/features/entries/data/models/water_progress.dart';
 import 'package:tea_challenge/features/entries/data/models/water_record.dart';
 import 'package:tea_challenge/features/entries/data/repositories/food_record_repository.dart';
 import 'package:tea_challenge/features/entries/data/repositories/water_record_repository.dart';
-import 'package:tea_challenge/features/entries/ui/view_models/entry_type.dart';
 import 'package:tea_challenge/features/home/ui/view_models/home_filter_type.dart';
 import 'package:tea_challenge/features/user/user.dart';
 

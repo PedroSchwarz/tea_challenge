@@ -40,11 +40,33 @@ class EntryItem extends StatelessWidget {
           }, color: Colors.white),
         ),
         title: Text(entry.displayName),
-        subtitle: Text(switch (entry) {
-          WaterEntry() => 'Water',
-          FoodEntry() => 'Food',
-          _ => 'Unknown',
-        }),
+        subtitle: Wrap(
+          spacing: AppSpacing.sm,
+          runSpacing: AppSpacing.sm,
+          crossAxisAlignment: WrapCrossAlignment.center,
+          children: [
+            Text(switch (entry) {
+              WaterEntry() => 'Water',
+              FoodEntry() => 'Food',
+              _ => 'Unknown',
+            }),
+            if (entry is FoodEntry) ...[
+              const SizedBox(height: 12, child: VerticalDivider()),
+              Text(
+                '${(entry as FoodEntry).foodRecord.carbs.toInt()}g C',
+                style: const TextStyle().copyWith(color: Colors.amber, fontWeight: FontWeight.bold),
+              ),
+              Text(
+                '${(entry as FoodEntry).foodRecord.protein.toInt()}g P',
+                style: const TextStyle().copyWith(color: Colors.green, fontWeight: FontWeight.bold),
+              ),
+              Text(
+                '${(entry as FoodEntry).foodRecord.fat.toInt()}g F',
+                style: const TextStyle().copyWith(color: Colors.red, fontWeight: FontWeight.bold),
+              ),
+            ],
+          ],
+        ),
         trailing: entry.createdAt != null ? Text(entry.formattedCreatedAt, style: theme.textTheme.bodySmall) : null,
         onTap: onTap,
       ),

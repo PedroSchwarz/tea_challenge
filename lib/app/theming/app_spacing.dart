@@ -23,4 +23,7 @@ class AppSpacing {
 
   /// Triple extra large spacing (64px) - Used for screen-level spacing
   static const double xxxl = 64.0;
+
+  /// Max width for landscape mode
+  static const double maxWidthLandscape = 500.0;
 }

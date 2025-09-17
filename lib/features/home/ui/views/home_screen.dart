@@ -9,12 +9,12 @@ import 'package:tea_challenge/features/entries/data/models/entry.dart';
 import 'package:tea_challenge/features/entries/data/models/water_progress.dart';
 import 'package:tea_challenge/features/entries/entries.dart';
 import 'package:tea_challenge/features/entries/ui/view_models/entry_type.dart';
-import 'package:tea_challenge/features/home/ui/view_models/home_filter_type.dart';
 import 'package:tea_challenge/features/home/ui/view_models/home_view_model.dart';
 import 'package:tea_challenge/features/home/ui/views/components/empty_entries_content.dart';
 import 'package:tea_challenge/features/home/ui/views/components/entries_list_content.dart';
+import 'package:tea_challenge/features/home/ui/views/components/entry_type_segment.dart';
+import 'package:tea_challenge/features/home/ui/views/components/goal_details_section.dart';
 import 'package:tea_challenge/features/home/ui/views/components/main_progress_ring.dart';
-import 'package:tea_challenge/features/home/ui/views/components/secondary_progress_ring.dart';
 import 'package:tea_challenge/features/home/ui/views/components/water_cup_progress.dart';
 import 'package:tea_challenge/features/home/ui/views/dialogs/delete_entry_dialog.dart';
 import 'package:tea_challenge/features/user/data/models/user_data.dart';
@@ -90,132 +90,77 @@ class _HomeScreenState extends State<HomeScreen> {
                           padding: const EdgeInsets.symmetric(horizontal: AppSpacing.md),
                           child: LayoutBuilder(
                             builder: (context, constraints) {
-                              final ringSize = (constraints.maxWidth / 2) - AppSpacing.md;
+                              final isLandscape = constraints.maxWidth > AppSpacing.maxWidthLandscape;
+                              final maxWidth = isLandscape ? AppSpacing.maxWidthLandscape : constraints.maxWidth;
+                              final ringSize = (maxWidth / 2) - AppSpacing.md;
 
-                              return Wrap(
+                              return Column(
+                                crossAxisAlignment: CrossAxisAlignment.stretch,
                                 spacing: AppSpacing.md,
-                                runSpacing: AppSpacing.md,
-                                alignment: WrapAlignment.spaceBetween,
                                 children: [
-                                  Selector<HomeViewModel, FoodProgress>(
-                                    selector: (context, viewModel) => viewModel.foodProgress,
-                                    builder: (context, progress, child) {
-                                      return MainProgressRing(
-                                        progressPercentage: progress.caloriesProgressPercentage,
-                                        topLabel: '${progress.totalCalories.toInt()}',
-                                        middleLabel: 'of ${progress.caloriesGoal.toInt()} kcal',
-                                        bottomLabel: '${(progress.caloriesProgressPercentage * 100).toInt()}%',
-                                        color: Colors.orange,
-                                        size: ringSize,
-                                      );
-                                    },
+                                  Wrap(
+                                    spacing: AppSpacing.md,
+                                    runSpacing: AppSpacing.md,
+                                    crossAxisAlignment: WrapCrossAlignment.center,
+                                    alignment: WrapAlignment.spaceBetween,
+                                    children: [
+                                      Selector<HomeViewModel, FoodProgress>(
+                                        selector: (context, viewModel) => viewModel.foodProgress,
+                                        builder: (context, progress, child) {
+                                          return MainProgressRing(
+                                            progressPercentage: progress.caloriesProgressPercentage,
+                                            topLabel: '${progress.totalCalories.toInt()}',
+                                            middleLabel: 'of ${progress.caloriesGoal.toInt()} kcal',
+                                            bottomLabel: '${(progress.caloriesProgressPercentage * 100).toInt()}%',
+                                            color: Colors.orange,
+                                            size: ringSize,
+                                          );
+                                        },
+                                      ),
+                                      Selector<HomeViewModel, WaterProgress>(
+                                        selector: (context, viewModel) => viewModel.waterProgress,
+                                        builder: (context, progress, child) {
+                                          return WaterCupProgress(
+                                            progressPercentage: progress.progressPercentage,
+                                            topLabel: '${progress.totalAmountInLiters}L',
+                                            middleLabel: 'of ${progress.goalInLiters}L',
+                                            bottomLabel: '${(progress.progressPercentage * 100).toInt()}%',
+                                            color: Colors.blue,
+                                            size: ringSize,
+                                          );
+                                        },
+                                      ),
+                                      if (isLandscape)
+                                        Selector<HomeViewModel, FoodProgress>(
+                                          selector: (context, viewModel) => viewModel.foodProgress,
+                                          builder: (context, foodProgress, child) {
+                                            return Selector<HomeViewModel, WaterProgress>(
+                                              selector: (context, viewModel) => viewModel.waterProgress,
+                                              builder: (context, waterProgress, child) {
+                                                return GoalDetailsSection(foodProgress: foodProgress, waterProgress: waterProgress);
+                                              },
+                                            );
+                                          },
+                                        ),
+                                    ],
                                   ),
-                                  Selector<HomeViewModel, WaterProgress>(
-                                    selector: (context, viewModel) => viewModel.waterProgress,
-                                    builder: (context, progress, child) {
-                                      return WaterCupProgress(
-                                        progressPercentage: progress.progressPercentage,
-                                        topLabel: '${progress.totalAmountInLiters.toInt()}L',
-                                        middleLabel: 'of ${progress.goalInLiters.toInt()}L',
-                                        bottomLabel: '${(progress.progressPercentage * 100).toInt()}%',
-                                        color: Colors.blue,
-                                        size: ringSize,
-                                      );
-                                    },
-                                  ),
+                                  if (!isLandscape) ...[
+                                    Selector<HomeViewModel, FoodProgress>(
+                                      selector: (context, viewModel) => viewModel.foodProgress,
+                                      builder: (context, foodProgress, child) {
+                                        return Selector<HomeViewModel, WaterProgress>(
+                                          selector: (context, viewModel) => viewModel.waterProgress,
+                                          builder: (context, waterProgress, child) {
+                                            return GoalDetailsSection(foodProgress: foodProgress, waterProgress: waterProgress);
+                                          },
+                                        );
+                                      },
+                                    ),
+                                    const Gap(AppSpacing.xs),
+                                  ],
                                 ],
                               );
                             },
-                          ),
-                        ),
-                        const Gap(AppSpacing.md),
-                        // Macro details
-                        Padding(
-                          padding: const EdgeInsets.symmetric(horizontal: AppSpacing.md),
-                          child: Wrap(
-                            spacing: AppSpacing.md,
-                            runSpacing: AppSpacing.md,
-                            alignment: WrapAlignment.spaceBetween,
-                            crossAxisAlignment: WrapCrossAlignment.end,
-                            children: [
-                              // Carbs
-                              Selector<HomeViewModel, FoodProgress>(
-                                selector: (context, viewModel) => viewModel.foodProgress,
-                                builder: (context, progress, child) {
-                                  return SecondaryProgressRing(
-                                    progressPercentage: progress.carbsProgressPercentage,
-                                    totalLabel: '${progress.totalCarbs.toInt()}g',
-                                    goalLabel: '${progress.carbsGoal.toInt()}g',
-                                    description: 'Carbs',
-                                    color: Colors.amber,
-                                  );
-                                },
-                              ),
-                              // Protein
-                              Selector<HomeViewModel, FoodProgress>(
-                                selector: (context, viewModel) => viewModel.foodProgress,
-                                builder: (context, progress, child) {
-                                  return SecondaryProgressRing(
-                                    progressPercentage: progress.proteinProgressPercentage,
-                                    totalLabel: '${progress.totalProtein.toInt()}g',
-                                    goalLabel: '${progress.proteinGoal.toInt()}g',
-                                    description: 'Protein',
-                                    color: Colors.green,
-                                  );
-                                },
-                              ),
-                              // Fat
-                              Selector<HomeViewModel, FoodProgress>(
-                                selector: (context, viewModel) => viewModel.foodProgress,
-                                builder: (context, progress, child) {
-                                  return SecondaryProgressRing(
-                                    progressPercentage: progress.fatProgressPercentage,
-                                    totalLabel: '${progress.totalFat.toInt()}g',
-                                    goalLabel: '${progress.fatGoal.toInt()}g',
-                                    description: 'Fat',
-                                    color: Colors.red,
-                                  );
-                                },
-                              ),
-                              // Water Progress Details
-                              Column(
-                                spacing: AppSpacing.md,
-                                children: [
-                                  Selector<HomeViewModel, double>(
-                                    selector: (context, viewModel) => viewModel.waterProgress.remainingInLiters,
-                                    builder: (context, remaining, child) {
-                                      return Column(
-                                        children: [
-                                          Text('${remaining.toStringAsFixed(1)}L', style: theme.textTheme.titleLarge?.copyWith(color: Colors.orange)),
-                                          Text('Remaining', style: theme.textTheme.bodyMedium),
-                                        ],
-                                      );
-                                    },
-                                  ),
-                                  Selector<HomeViewModel, bool>(
-                                    selector: (context, viewModel) => viewModel.waterProgress.isGoalReached,
-                                    builder: (context, isGoalReached, child) {
-                                      return Column(
-                                        children: [
-                                          Icon(
-                                            isGoalReached ? Icons.check_circle : Icons.water_drop,
-                                            color: isGoalReached ? Colors.green : Colors.blue,
-                                            size: 32,
-                                          ),
-                                          Text(
-                                            isGoalReached ? 'Goal Reached!' : 'Keep Going',
-                                            style: theme.textTheme.bodyMedium?.copyWith(
-                                              color: isGoalReached ? Colors.green : Colors.blue,
-                                              fontWeight: FontWeight.w600,
-                                            ),
-                                          ),
-                                        ],
-                                      );
-                                    },
-                                  ),
-                                ],
-                              ),
-                            ],
                           ),
                         ),
                       ],
@@ -225,21 +170,7 @@ class _HomeScreenState extends State<HomeScreen> {
                     builder: (context, viewModel, child) {
                       if (viewModel.foodRecords.isNotEmpty || viewModel.waterRecords.isNotEmpty) {
                         return PinnedHeaderSliver(
-                          child: Container(
-                            color: theme.scaffoldBackgroundColor,
-                            padding: const EdgeInsets.all(AppSpacing.md),
-                            child: SegmentedButton<HomeFilterType>(
-                              segments: const [
-                                ButtonSegment(value: HomeFilterType.all, label: Text('All')),
-                                ButtonSegment(value: HomeFilterType.food, label: Text('Food')),
-                                ButtonSegment(value: HomeFilterType.water, label: Text('Water')),
-                              ],
-                              selected: {viewModel.selectedSegment},
-                              onSelectionChanged: (value) {
-                                viewModel.setSelectedSegment(value.first);
-                              },
-                            ),
-                          ),
+                          child: EntryTypeSegment(selectedSegment: viewModel.selectedSegment, onSelected: viewModel.setSelectedSegment),
                         );
                       }
                       return const SliverToBoxAdapter(child: SizedBox.shrink());
