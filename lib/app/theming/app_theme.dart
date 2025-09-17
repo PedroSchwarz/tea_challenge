@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:tea_challenge/app/theming/app_spacing.dart';
+import 'package:tea_challenge/app/theming/app_typography.dart';
 
 class AppTheme {
   static const Color primaryPurple = Color(0xFF6750A4);
@@ -12,6 +14,17 @@ class AppTheme {
     brightness: Brightness.light,
     colorScheme: ColorScheme.fromSeed(seedColor: primaryPurple, brightness: Brightness.light),
     scaffoldBackgroundColor: lightBackgroundColor,
+    textTheme: AppTypography.defaultTextTheme,
+    appBarTheme: AppBarTheme(
+      centerTitle: false,
+      titleTextStyle: AppTypography.defaultTextTheme.displayMedium?.copyWith(color: Colors.black),
+      backgroundColor: lightBackgroundColor,
+    ),
+    inputDecorationTheme: const InputDecorationTheme(
+      border: OutlineInputBorder(borderSide: BorderSide.none, borderRadius: BorderRadius.all(Radius.circular(AppSpacing.sm))),
+      focusedBorder: OutlineInputBorder(borderSide: BorderSide(color: primaryPurple)),
+      filled: true,
+    ),
   );
 
   static final ThemeData darkTheme = ThemeData(
@@ -19,5 +32,16 @@ class AppTheme {
     brightness: Brightness.dark,
     colorScheme: ColorScheme.fromSeed(seedColor: primaryPurpleLight, brightness: Brightness.dark),
     scaffoldBackgroundColor: darkBackgroundColor,
+    textTheme: AppTypography.defaultTextTheme,
+    appBarTheme: AppBarTheme(
+      centerTitle: false,
+      titleTextStyle: AppTypography.defaultTextTheme.displayMedium?.copyWith(color: Colors.white),
+      backgroundColor: darkBackgroundColor,
+    ),
+    inputDecorationTheme: const InputDecorationTheme(
+      border: OutlineInputBorder(borderSide: BorderSide.none, borderRadius: BorderRadius.all(Radius.circular(AppSpacing.sm))),
+      focusedBorder: OutlineInputBorder(borderSide: BorderSide(color: primaryPurpleLight)),
+      filled: true,
+    ),
   );
 }
