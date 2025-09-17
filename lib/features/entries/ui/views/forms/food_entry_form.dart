@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_animate/flutter_animate.dart';
 import 'package:gap/gap.dart';
 import 'package:provider/provider.dart';
 import 'package:tea_challenge/app/theming/app_spacing.dart';
+import 'package:tea_challenge/features/entries/domain/usecases/validate_numeric_field.dart';
 import 'package:tea_challenge/features/entries/ui/view_models/create_entry_view_model.dart';
 
 class FoodEntryForm extends StatelessWidget {
@@ -14,6 +16,7 @@ class FoodEntryForm extends StatelessWidget {
     required this.carbsController,
     required this.proteinController,
     required this.fatController,
+    required this.validateNumericField,
   });
 
   final GlobalKey<FormState> formKey;
@@ -23,6 +26,7 @@ class FoodEntryForm extends StatelessWidget {
   final TextEditingController carbsController;
   final TextEditingController proteinController;
   final TextEditingController fatController;
+  final ValidateNumericField validateNumericField;
 
   @override
   Widget build(BuildContext context) {
@@ -47,6 +51,7 @@ class FoodEntryForm extends StatelessWidget {
           ),
           Row(
             spacing: AppSpacing.sm,
+            crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Flexible(
                 child: TextFormField(
@@ -54,10 +59,21 @@ class FoodEntryForm extends StatelessWidget {
                   decoration: const InputDecoration(labelText: 'Calories per portion'),
                   keyboardType: const TextInputType.numberWithOptions(decimal: true),
                   validator: (value) {
-                    if (value == null || value.isEmpty) {
-                      return 'Calories per portion is required';
+                    final result = validateNumericField(value);
+                    switch (result) {
+                      case NumericValidationResult.valid:
+                        return null;
+                      case NumericValidationResult.empty:
+                        return 'Calories per portion is required';
+                      case NumericValidationResult.invalidFormat:
+                        return 'Calories per portion must be a valid number (e.g., 123 or 123.45)';
+                      case NumericValidationResult.tooManyDecimals:
+                        return 'Calories per portion can have at most 2 decimal places';
+                      case NumericValidationResult.containsLetters:
+                        return 'Calories per portion must contain only numbers';
+                      case NumericValidationResult.containsSpecialChars:
+                        return 'Calories per portion must contain only numbers and decimal point';
                     }
-                    return null;
                   },
                 ),
               ),
@@ -67,10 +83,21 @@ class FoodEntryForm extends StatelessWidget {
                   decoration: const InputDecoration(labelText: 'Portion size'),
                   keyboardType: const TextInputType.numberWithOptions(decimal: true),
                   validator: (value) {
-                    if (value == null || value.isEmpty) {
-                      return 'Portion size is required';
+                    final result = validateNumericField(value);
+                    switch (result) {
+                      case NumericValidationResult.valid:
+                        return null;
+                      case NumericValidationResult.empty:
+                        return 'Portion size is required';
+                      case NumericValidationResult.invalidFormat:
+                        return 'Portion size must be a valid number (e.g., 123 or 123.45)';
+                      case NumericValidationResult.tooManyDecimals:
+                        return 'Portion size can have at most 2 decimal places';
+                      case NumericValidationResult.containsLetters:
+                        return 'Portion size must contain only numbers';
+                      case NumericValidationResult.containsSpecialChars:
+                        return 'Portion size must contain only numbers and decimal point';
                     }
-                    return null;
                   },
                 ),
               ),
@@ -81,10 +108,21 @@ class FoodEntryForm extends StatelessWidget {
             decoration: const InputDecoration(labelText: 'Carbs'),
             keyboardType: const TextInputType.numberWithOptions(decimal: true),
             validator: (value) {
-              if (value == null || value.isEmpty) {
-                return 'Carbs is required';
+              final result = validateNumericField(value);
+              switch (result) {
+                case NumericValidationResult.valid:
+                  return null;
+                case NumericValidationResult.empty:
+                  return 'Carbs is required';
+                case NumericValidationResult.invalidFormat:
+                  return 'Carbs must be a valid number (e.g., 123 or 123.45)';
+                case NumericValidationResult.tooManyDecimals:
+                  return 'Carbs can have at most 2 decimal places';
+                case NumericValidationResult.containsLetters:
+                  return 'Carbs must contain only numbers';
+                case NumericValidationResult.containsSpecialChars:
+                  return 'Carbs must contain only numbers and decimal point';
               }
-              return null;
             },
           ),
           TextFormField(
@@ -92,10 +130,21 @@ class FoodEntryForm extends StatelessWidget {
             decoration: const InputDecoration(labelText: 'Protein'),
             keyboardType: const TextInputType.numberWithOptions(decimal: true),
             validator: (value) {
-              if (value == null || value.isEmpty) {
-                return 'Protein is required';
+              final result = validateNumericField(value);
+              switch (result) {
+                case NumericValidationResult.valid:
+                  return null;
+                case NumericValidationResult.empty:
+                  return 'Protein is required';
+                case NumericValidationResult.invalidFormat:
+                  return 'Protein must be a valid number (e.g., 123 or 123.45)';
+                case NumericValidationResult.tooManyDecimals:
+                  return 'Protein can have at most 2 decimal places';
+                case NumericValidationResult.containsLetters:
+                  return 'Protein must contain only numbers';
+                case NumericValidationResult.containsSpecialChars:
+                  return 'Protein must contain only numbers and decimal point';
               }
-              return null;
             },
           ),
           TextFormField(
@@ -103,21 +152,31 @@ class FoodEntryForm extends StatelessWidget {
             decoration: const InputDecoration(labelText: 'Fat'),
             keyboardType: const TextInputType.numberWithOptions(decimal: true),
             validator: (value) {
-              if (value == null || value.isEmpty) {
-                return 'Fat is required';
+              final result = validateNumericField(value);
+              switch (result) {
+                case NumericValidationResult.valid:
+                  return null;
+                case NumericValidationResult.empty:
+                  return 'Fat is required';
+                case NumericValidationResult.invalidFormat:
+                  return 'Fat must be a valid number (e.g., 123 or 123.45)';
+                case NumericValidationResult.tooManyDecimals:
+                  return 'Fat can have at most 2 decimal places';
+                case NumericValidationResult.containsLetters:
+                  return 'Fat must contain only numbers';
+                case NumericValidationResult.containsSpecialChars:
+                  return 'Fat must contain only numbers and decimal point';
               }
-              return null;
             },
           ),
-          const Gap(AppSpacing.md),
           Selector<CreateEntryViewModel, double>(
             selector: (context, viewModel) => viewModel.totalCalories,
             builder: (context, totalCalories, child) {
-              return Text('Total Calories: $totalCalories', style: theme.textTheme.headlineSmall);
+              return Text('Total Calories: $totalCalories Kcal', style: theme.textTheme.headlineSmall);
             },
           ),
         ],
       ),
-    );
+    ).animate().fadeIn();
   }
 }

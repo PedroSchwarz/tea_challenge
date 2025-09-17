@@ -48,9 +48,9 @@ class FoodRecordRepository {
     }
   }
 
-  Future<List<FoodRecord>> getFoodRecords() async {
+  Future<List<FoodRecord>> getFoodRecords({DateTime? date}) async {
     try {
-      return await foodLocalDataSource.getFoodRecords();
+      return await foodLocalDataSource.getFoodRecords(date: date);
     } catch (e, s) {
       _logger.severe('Error getting food records', e, s);
       rethrow;
@@ -65,7 +65,7 @@ class FoodRecordRepository {
   }) async {
     try {
       final foodRecords = await foodLocalDataSource.getFoodRecords(date: DateTime.now());
-      final totalCalories = foodRecords.fold(0.0, (sum, record) => sum + record.caloriesPerPortion);
+      final totalCalories = foodRecords.fold(0.0, (sum, record) => sum + (record.caloriesPerPortion * record.portionSize));
       final totalCarbs = foodRecords.fold(0.0, (sum, record) => sum + record.carbs);
       final totalProtein = foodRecords.fold(0.0, (sum, record) => sum + record.protein);
       final totalFat = foodRecords.fold(0.0, (sum, record) => sum + record.fat);

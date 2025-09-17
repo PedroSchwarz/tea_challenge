@@ -21,10 +21,23 @@ GoRouter createRouter() {
           GoRoute(
             path: '/${CreateEntryScreen.routeName}',
             name: CreateEntryScreen.routeName,
-            builder: (context, state) {
-              final id = int.tryParse(state.uri.queryParameters['id'] ?? '');
-              final type = EntryType.fromString(state.uri.queryParameters['type'] ?? '');
-              return CreateEntryScreen(id: id, type: type);
+            pageBuilder: (context, state) {
+              return CustomTransitionPage(
+                child: CreateEntryScreen(
+                  id: int.tryParse(state.uri.queryParameters['id'] ?? ''),
+                  type: EntryType.fromString(state.uri.queryParameters['type'] ?? ''),
+                ),
+                transitionsBuilder: (context, animation, secondaryAnimation, child) {
+                  const begin = Offset(0.0, 1.0); // Start from the bottom
+                  const end = Offset.zero; // End at the center
+                  const curve = Curves.easeOut;
+
+                  final tween = Tween(begin: begin, end: end);
+                  final curvedAnimation = CurvedAnimation(parent: animation, curve: curve);
+
+                  return SlideTransition(position: tween.animate(curvedAnimation), child: child);
+                },
+              );
             },
           ),
         ],

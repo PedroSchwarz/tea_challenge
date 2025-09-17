@@ -48,9 +48,9 @@ class WaterRecordRepository {
     }
   }
 
-  Future<List<WaterRecord>> getWaterRecords() async {
+  Future<List<WaterRecord>> getWaterRecords({DateTime? date}) async {
     try {
-      return await waterLocalDataSource.getWaterRecords();
+      return await waterLocalDataSource.getWaterRecords(date: date);
     } catch (e, s) {
       _logger.severe('Error getting water records', e, s);
       rethrow;
