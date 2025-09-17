@@ -36,7 +36,7 @@ class MainLocator extends BaseServiceLocator {
     getIt.registerSingleton<FlutterSecureStorage>(secureStorage);
     getIt.registerSingleton<SharedPreferences>(sharedPreferences);
 
-    final appLocalStorage = AppLocalStorage(secureStorage: secureStorage, sharedPreferences: sharedPreferences);
+    final appLocalStorage = AppLocalStorageImpl(secureStorage: secureStorage, sharedPreferences: sharedPreferences);
     await appLocalStorage.create();
 
     /// App Dependencies
@@ -49,20 +49,24 @@ class MainLocator extends BaseServiceLocator {
     getIt.registerSingleton<UserLocalDataSource>(UserLocalDataSource(appLocalStorage: appLocalStorage));
     getIt.registerSingleton<UserRepository>(UserRepository(userLocalDataSource: getIt<UserLocalDataSource>()));
 
-    /// Home Dependencies
+    /// Entries Dependencies
     getIt.registerSingleton<FoodRecordManager>(getIt<AppDatabase>().managers.foodRecordEntry);
     getIt.registerSingleton<WaterRecordManager>(getIt<AppDatabase>().managers.waterRecordEntry);
     getIt.registerSingleton<FoodLocalDataSource>(FoodLocalDataSourceImpl(manager: getIt<FoodRecordManager>()));
     getIt.registerSingleton<WaterLocalDataSource>(WaterLocalDataSourceImpl(manager: getIt<WaterRecordManager>()));
     getIt.registerSingleton<FoodRecordRepository>(FoodRecordRepository(foodLocalDataSource: getIt<FoodLocalDataSource>()));
     getIt.registerSingleton<WaterRecordRepository>(WaterRecordRepository(waterLocalDataSource: getIt<WaterLocalDataSource>()));
-    getIt.registerFactory<HomeViewModel>(
-      () => HomeViewModel(foodRecordRepository: getIt<FoodRecordRepository>(), userRepository: getIt<UserRepository>()),
-    );
-
-    /// Entries Dependencies
     getIt.registerFactory<CreateEntryViewModel>(
       () => CreateEntryViewModel(foodRecordRepository: getIt<FoodRecordRepository>(), waterRecordRepository: getIt<WaterRecordRepository>()),
+    );
+
+    /// Home Dependencies
+    getIt.registerFactory<HomeViewModel>(
+      () => HomeViewModel(
+        foodRecordRepository: getIt<FoodRecordRepository>(),
+        waterRecordRepository: getIt<WaterRecordRepository>(),
+        userRepository: getIt<UserRepository>(),
+      ),
     );
   }
 }

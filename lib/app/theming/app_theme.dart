@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:tea_challenge/app/theming/app_spacing.dart';
 import 'package:tea_challenge/app/theming/app_typography.dart';
 
 class AppTheme {
@@ -20,7 +21,7 @@ class AppTheme {
       backgroundColor: lightBackgroundColor,
     ),
     inputDecorationTheme: const InputDecorationTheme(
-      border: InputBorder.none,
+      border: OutlineInputBorder(borderSide: BorderSide.none, borderRadius: BorderRadius.all(Radius.circular(AppSpacing.sm))),
       focusedBorder: OutlineInputBorder(borderSide: BorderSide(color: primaryPurple)),
       filled: true,
     ),
@@ -38,7 +39,7 @@ class AppTheme {
       backgroundColor: darkBackgroundColor,
     ),
     inputDecorationTheme: const InputDecorationTheme(
-      border: InputBorder.none,
+      border: OutlineInputBorder(borderSide: BorderSide.none, borderRadius: BorderRadius.all(Radius.circular(AppSpacing.sm))),
       focusedBorder: OutlineInputBorder(borderSide: BorderSide(color: primaryPurpleLight)),
       filled: true,
     ),
