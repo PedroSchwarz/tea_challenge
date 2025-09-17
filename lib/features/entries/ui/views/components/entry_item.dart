@@ -3,9 +3,10 @@ import 'package:tea_challenge/app/theming/app_spacing.dart';
 import 'package:tea_challenge/features/entries/data/models/entry.dart';
 
 class EntryItem extends StatelessWidget {
-  const EntryItem({super.key, required this.entry, required this.onDismiss, required this.onTap});
+  const EntryItem({super.key, required this.entry, required this.enabled, required this.onDismiss, required this.onTap});
 
   final Entry entry;
+  final bool enabled;
   final VoidCallback onDismiss;
   final VoidCallback onTap;
 
@@ -15,7 +16,7 @@ class EntryItem extends StatelessWidget {
 
     return Dismissible(
       key: Key(entry.id.toString()),
-      direction: DismissDirection.endToStart,
+      direction: enabled ? DismissDirection.endToStart : DismissDirection.none,
       background: Container(
         padding: const EdgeInsets.all(AppSpacing.md),
         alignment: Alignment.centerRight,
@@ -68,7 +69,7 @@ class EntryItem extends StatelessWidget {
           ],
         ),
         trailing: entry.createdAt != null ? Text(entry.formattedCreatedAt, style: theme.textTheme.bodySmall) : null,
-        onTap: onTap,
+        onTap: enabled ? onTap : null,
       ),
     );
   }

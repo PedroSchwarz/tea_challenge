@@ -6,10 +6,11 @@ import 'package:tea_challenge/features/history/data/models/history_data.dart';
 import 'package:tea_challenge/features/history/ui/components/progression_card.dart';
 
 class ProgressionHistorySection extends StatelessWidget {
-  const ProgressionHistorySection({super.key, required this.historyData, required this.isLoading, required this.onTap});
+  const ProgressionHistorySection({super.key, required this.historyData, required this.isLoading, required this.selectedDate, required this.onTap});
 
   final List<HistoryData> historyData;
   final bool isLoading;
+  final DateTime selectedDate;
   final void Function(HistoryData dayData) onTap;
 
   @override
@@ -36,7 +37,13 @@ class ProgressionHistorySection extends StatelessWidget {
               spacing: AppSpacing.md,
               children:
                   historyData.map((dayData) {
-                    return Expanded(child: ProgressionCard(dayData: dayData, onTap: () => onTap(dayData)));
+                    return Expanded(
+                      child: ProgressionCard(
+                        dayData: dayData,
+                        isSelected: DateUtils.dateOnly(dayData.date) == selectedDate,
+                        onTap: () => onTap(dayData),
+                      ),
+                    );
                   }).toList(),
             ),
         ],

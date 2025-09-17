@@ -57,14 +57,15 @@ class FoodRecordRepository {
     }
   }
 
-  Future<FoodProgress> getFoodProgressForToday({
+  Future<FoodProgress> getFoodProgressForDate({
+    required DateTime date,
     required double caloriesGoal,
     required double carbsGoal,
     required double proteinGoal,
     required double fatGoal,
   }) async {
     try {
-      final foodRecords = await foodLocalDataSource.getFoodRecords(date: DateTime.now());
+      final foodRecords = await getFoodRecords(date: date);
       final totalCalories = foodRecords.fold(0.0, (sum, record) => sum + (record.caloriesPerPortion * record.portionSize));
       final totalCarbs = foodRecords.fold(0.0, (sum, record) => sum + record.carbs);
       final totalProtein = foodRecords.fold(0.0, (sum, record) => sum + record.protein);
@@ -81,7 +82,7 @@ class FoodRecordRepository {
         fatGoal: fatGoal,
       );
     } catch (e, s) {
-      _logger.severe('Error getting food progress for today', e, s);
+      _logger.severe('Error getting food progress for date', e, s);
       rethrow;
     }
   }

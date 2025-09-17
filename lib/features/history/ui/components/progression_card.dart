@@ -4,15 +4,15 @@ import 'package:tea_challenge/app/theming/app_spacing.dart';
 import 'package:tea_challenge/features/history/data/models/history_data.dart';
 
 class ProgressionCard extends StatelessWidget {
-  const ProgressionCard({super.key, required this.dayData, required this.onTap});
+  const ProgressionCard({super.key, required this.dayData, required this.isSelected, required this.onTap});
 
   final HistoryData dayData;
+  final bool isSelected;
   final VoidCallback onTap;
 
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
-    final isToday = dayData.date.day == DateTime.now().day;
 
     return Material(
       child: InkWell(
@@ -24,7 +24,7 @@ class ProgressionCard extends StatelessWidget {
           padding: const EdgeInsets.all(AppSpacing.md),
           decoration: BoxDecoration(
             borderRadius: BorderRadius.circular(AppSpacing.sm),
-            border: Border.all(color: isToday ? theme.colorScheme.primary : theme.colorScheme.primaryContainer, width: 1),
+            border: Border.all(color: isSelected ? theme.colorScheme.primary : theme.colorScheme.primaryContainer, width: 1),
           ),
           child: Wrap(
             spacing: AppSpacing.md,

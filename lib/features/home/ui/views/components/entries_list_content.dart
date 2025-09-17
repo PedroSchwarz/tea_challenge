@@ -3,9 +3,10 @@ import 'package:tea_challenge/features/entries/data/models/entry.dart';
 import 'package:tea_challenge/features/entries/ui/views/components/entry_item.dart';
 
 class EntriesListContent extends StatelessWidget {
-  const EntriesListContent({super.key, required this.entries, required this.onDismiss, required this.onTap});
+  const EntriesListContent({super.key, required this.entries, required this.enabled, required this.onDismiss, required this.onTap});
 
   final List<Entry> entries;
+  final bool enabled;
   final void Function(Entry entry) onDismiss;
   final Future<void> Function(Entry entry) onTap;
 
@@ -19,6 +20,7 @@ class EntriesListContent extends StatelessWidget {
 
         return EntryItem(
           entry: entry,
+          enabled: enabled,
           onDismiss: () {
             onDismiss(entry);
           },

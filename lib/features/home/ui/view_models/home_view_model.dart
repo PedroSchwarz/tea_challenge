@@ -1,6 +1,6 @@
 import 'dart:async';
 
-import 'package:flutter/foundation.dart';
+import 'package:flutter/material.dart';
 import 'package:logging/logging.dart';
 import 'package:tea_challenge/features/entries/data/models/entry.dart';
 import 'package:tea_challenge/features/entries/data/models/food_progress.dart';
@@ -71,6 +71,7 @@ class HomeViewModel extends ChangeNotifier {
   Entry? _entryToDelete;
   bool _showUndoDeleteEntry = false;
   List<HistoryData> _historyData = [];
+  DateTime _selectedDate = DateUtils.dateOnly(DateTime.now());
 
   // Getters
   bool get isLoading => _isLoading;
@@ -91,6 +92,8 @@ class HomeViewModel extends ChangeNotifier {
   bool get noRecords => entries.isEmpty;
   bool get showUndoDeleteEntry => _showUndoDeleteEntry;
   List<HistoryData> get historyData => _historyData;
+  DateTime get selectedDate => _selectedDate;
+  bool get areActionsEnabled => selectedDate == DateUtils.dateOnly(DateTime.now());
 
   Future<void> load() async {
     _isLoading = true;
@@ -116,21 +119,25 @@ class HomeViewModel extends ChangeNotifier {
 
   Future<void> _loadFoodProgress() async {
     try {
-      _foodProgress = await foodRecordRepository.getFoodProgressForToday(
+      final foodProgress = await foodRecordRepository.getFoodProgressForDate(
+        date: _selectedDate,
         caloriesGoal: _userData.caloriesGoal,
         carbsGoal: _userData.carbsGoal,
         proteinGoal: _userData.proteinGoal,
         fatGoal: _userData.fatGoal,
       );
+
+      _foodProgress = foodProgress;
       notifyListeners();
     } catch (e, s) {
-      _logger.severe('Error loading enhanced food progress', e, s);
+      _logger.severe('Error loading food progress', e, s);
     }
   }
 
   Future<void> _loadWaterProgress() async {
     try {
-      _waterProgress = await waterRecordRepository.getWaterProgressForToday(_userData.waterGoal);
+      final waterProgress = await waterRecordRepository.getWaterProgressForDate(date: _selectedDate, goalInLiters: _userData.waterGoal);
+      _waterProgress = waterProgress;
       notifyListeners();
     } catch (e, s) {
       _logger.severe('Error loading water progress', e, s);
@@ -139,7 +146,7 @@ class HomeViewModel extends ChangeNotifier {
 
   Future<void> _loadFoodRecords() async {
     try {
-      _foodRecords = await foodRecordRepository.getFoodRecords(date: DateTime.now());
+      _foodRecords = await foodRecordRepository.getFoodRecords(date: _selectedDate);
       notifyListeners();
     } catch (e, s) {
       _logger.severe('Error loading food records', e, s);
@@ -148,7 +155,7 @@ class HomeViewModel extends ChangeNotifier {
 
   Future<void> _loadWaterRecords() async {
     try {
-      _waterRecords = await waterRecordRepository.getWaterRecords(date: DateTime.now());
+      _waterRecords = await waterRecordRepository.getWaterRecords(date: _selectedDate);
       notifyListeners();
     } catch (e, s) {
       _logger.severe('Error loading water records', e, s);
@@ -170,11 +177,7 @@ class HomeViewModel extends ChangeNotifier {
       _entries = [...foodEntries, ...waterEntries];
 
       // Sort by creation date (most recent first)
-      _entries.sort((a, b) {
-        final aDate = a.createdAt ?? DateTime(1970);
-        final bDate = b.createdAt ?? DateTime(1970);
-        return bDate.compareTo(aDate);
-      });
+      _sortEntries();
 
       notifyListeners();
     } catch (e, s) {
@@ -219,17 +222,25 @@ class HomeViewModel extends ChangeNotifier {
       switch (entry) {
         case FoodEntry(foodRecord: final foodRecord):
           if (foodRecord.id != null) {
-            await foodRecordRepository.deleteFoodRecord(foodRecord.id!);
-            await _loadFoodProgress();
-            setShowUndoDeleteEntry(false);
-            resetEntryToDelete();
+            try {
+              await foodRecordRepository.deleteFoodRecord(foodRecord.id!);
+              await Future.wait([_loadFoodProgress(), _loadHistoryData()]);
+              setShowUndoDeleteEntry(false);
+              resetEntryToDelete();
+            } catch (e, s) {
+              _logger.severe('Error deleting food record', e, s);
+            }
           }
         case WaterEntry(waterRecord: final waterRecord):
           if (waterRecord.id != null) {
-            await waterRecordRepository.deleteWaterRecord(waterRecord.id!);
-            await _loadWaterProgress();
-            setShowUndoDeleteEntry(false);
-            resetEntryToDelete();
+            try {
+              await waterRecordRepository.deleteWaterRecord(waterRecord.id!);
+              await Future.wait([_loadWaterProgress(), _loadHistoryData()]);
+              setShowUndoDeleteEntry(false);
+              resetEntryToDelete();
+            } catch (e, s) {
+              _logger.severe('Error deleting water record', e, s);
+            }
           }
       }
     });
@@ -257,28 +268,30 @@ class HomeViewModel extends ChangeNotifier {
     _deleteEntryTimer = null;
     setShowUndoDeleteEntry(false);
 
-    if (_entryToDelete != null) {
-      _entries.add(_entryToDelete!);
-      _entries.sort((a, b) {
-        final aDate = a.createdAt ?? DateTime.now();
-        final bDate = b.createdAt ?? DateTime.now();
-        return bDate.compareTo(aDate);
-      });
-      switch (_entryToDelete) {
-        case FoodEntry(foodRecord: final foodRecord):
-          _foodProgress = _foodProgress.copyWith(
-            totalCalories: _foodProgress.totalCalories + foodRecord.caloriesPerPortion * foodRecord.portionSize,
-            totalCarbs: _foodProgress.totalCarbs + foodRecord.carbs,
-            totalProtein: _foodProgress.totalProtein + foodRecord.protein,
-            totalFat: _foodProgress.totalFat + foodRecord.fat,
-          );
-        case WaterEntry(waterRecord: final waterRecord):
-          _waterProgress = _waterProgress.copyWith(totalAmountInMl: _waterProgress.totalAmountInMl + waterRecord.amountInMl);
+    final entry = _entryToDelete;
+
+    if (entry != null) {
+      _entries.add(entry);
+      _sortEntries();
+
+      switch (entry) {
+        case FoodEntry(foodRecord: final _):
+          _loadFoodProgress();
+        case WaterEntry(waterRecord: final _):
+          _loadWaterProgress();
       }
     }
 
     resetEntryToDelete();
     notifyListeners();
+  }
+
+  void _sortEntries() {
+    _entries.sort((a, b) {
+      final aDate = a.createdAt ?? DateTime.now();
+      final bDate = b.createdAt ?? DateTime.now();
+      return bDate.compareTo(aDate);
+    });
   }
 
   void setShowUndoDeleteEntry(bool value) {
@@ -293,6 +306,25 @@ class HomeViewModel extends ChangeNotifier {
     } catch (e, s) {
       _logger.severe('Error loading history data', e, s);
     }
+  }
+
+  /// Selects a specific date and loads all data for that date
+  Future<void> selectDate(DateTime date) async {
+    _selectedDate = DateUtils.dateOnly(date);
+    notifyListeners();
+
+    try {
+      await Future.wait([_loadFoodRecords(), _loadWaterRecords()]);
+      await Future.wait([_loadFoodProgress(), _loadWaterProgress(), _loadEntries()]);
+    } catch (e, s) {
+      _logger.severe('Error loading data for selected date', e, s);
+    }
+  }
+
+  /// Resets to today's date and loads current data
+  Future<void> resetToToday() async {
+    _selectedDate = DateUtils.dateOnly(DateTime.now());
+    await load();
   }
 
   @override
