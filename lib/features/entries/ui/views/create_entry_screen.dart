@@ -100,76 +100,89 @@ class CreateEntryScreenState extends State<CreateEntryScreen> {
           builder: (context, constraints, isLandscape, maxWidth) {
             return Scaffold(
               appBar: AppBar(title: Text(widget.id != null ? 'Edit Entry' : 'Create Entry')),
-              body: SafeArea(
-                top: isLandscape,
-                bottom: false,
-                child: Column(
-                  children: [
-                    Expanded(
-                      child: Consumer<CreateEntryViewModel>(
-                        builder: (context, viewModel, child) {
-                          if (viewModel.isLoading) {
-                            return const Center(child: CircularProgressIndicator());
-                          }
+              body: Stack(
+                children: [
+                  SafeArea(
+                    top: isLandscape,
+                    bottom: false,
+                    child: Column(
+                      children: [
+                        Expanded(
+                          child: Consumer<CreateEntryViewModel>(
+                            builder: (context, viewModel, child) {
+                              if (viewModel.isLoading) {
+                                return const Center(child: CircularProgressIndicator());
+                              }
 
-                          return SingleChildScrollView(
-                            child: Padding(
-                              padding: const EdgeInsets.all(AppSpacing.md),
-                              child: Column(
-                                crossAxisAlignment: CrossAxisAlignment.stretch,
-                                children: [
-                                  Text('Entry Type', style: theme.textTheme.headlineSmall),
-                                  const Gap(AppSpacing.md),
-                                  Selector<CreateEntryViewModel, EntryType>(
-                                    selector: (context, viewModel) => viewModel.selectedType,
-                                    builder: (context, selectedType, child) {
-                                      return SegmentedButton(
-                                        segments:
-                                            EntryType.values.map((type) {
-                                              return ButtonSegment(value: type.value, label: Text(type.value));
-                                            }).toList(),
-                                        selected: {selectedType.value},
-                                        onSelectionChanged: (value) {
-                                          _viewModel.setSelectedType(value.first);
+                              return SingleChildScrollView(
+                                child: Padding(
+                                  padding: const EdgeInsets.all(AppSpacing.md),
+                                  child: Column(
+                                    crossAxisAlignment: CrossAxisAlignment.stretch,
+                                    children: [
+                                      Text('Entry Type', style: theme.textTheme.headlineSmall),
+                                      const Gap(AppSpacing.md),
+                                      Selector<CreateEntryViewModel, EntryType>(
+                                        selector: (context, viewModel) => viewModel.selectedType,
+                                        builder: (context, selectedType, child) {
+                                          return SegmentedButton(
+                                            segments:
+                                                EntryType.values.map((type) {
+                                                  return ButtonSegment(value: type.value, label: Text(type.value));
+                                                }).toList(),
+                                            selected: {selectedType.value},
+                                            onSelectionChanged: (value) {
+                                              _viewModel.setSelectedType(value.first);
+                                            },
+                                          );
                                         },
-                                      );
-                                    },
+                                      ),
+                                      const Gap(AppSpacing.md),
+                                      Selector<CreateEntryViewModel, EntryType>(
+                                        selector: (context, viewModel) => viewModel.selectedType,
+                                        builder: (context, selectedType, child) {
+                                          if (selectedType == EntryType.food) {
+                                            return FoodEntryForm(
+                                              formKey: _foodFormKey,
+                                              nameController: _nameController,
+                                              caloriesPerPortionController: _caloriesPerPortionController,
+                                              portionSizeController: _portionSizeController,
+                                              carbsController: _carbsController,
+                                              proteinController: _proteinController,
+                                              fatController: _fatController,
+                                              validateNumericField: _validateNumericField,
+                                            );
+                                          } else {
+                                            return WaterEntryForm(
+                                              formKey: _waterFormKey,
+                                              waterController: _waterController,
+                                              onSelectedQuantity: _viewModel.setSelectedQuantity,
+                                              validateNumericField: _validateNumericField,
+                                            );
+                                          }
+                                        },
+                                      ),
+                                      const Gap(AppSpacing.xxxl),
+                                    ],
                                   ),
-                                  const Gap(AppSpacing.md),
-                                  Selector<CreateEntryViewModel, EntryType>(
-                                    selector: (context, viewModel) => viewModel.selectedType,
-                                    builder: (context, selectedType, child) {
-                                      if (selectedType == EntryType.food) {
-                                        return FoodEntryForm(
-                                          formKey: _foodFormKey,
-                                          nameController: _nameController,
-                                          caloriesPerPortionController: _caloriesPerPortionController,
-                                          portionSizeController: _portionSizeController,
-                                          carbsController: _carbsController,
-                                          proteinController: _proteinController,
-                                          fatController: _fatController,
-                                          validateNumericField: _validateNumericField,
-                                        );
-                                      } else {
-                                        return WaterEntryForm(
-                                          formKey: _waterFormKey,
-                                          waterController: _waterController,
-                                          onSelectedQuantity: _viewModel.setSelectedQuantity,
-                                          validateNumericField: _validateNumericField,
-                                        );
-                                      }
-                                    },
-                                  ),
-                                  const Gap(AppSpacing.xxxl),
-                                ],
-                              ),
-                            ),
-                          );
-                        },
-                      ),
+                                ),
+                              );
+                            },
+                          ),
+                        ),
+                      ],
                     ),
-                  ],
-                ),
+                  ),
+                  Selector<CreateEntryViewModel, CreateEntryError?>(
+                    selector: (context, viewModel) => viewModel.error,
+                    builder: (context, error, child) {
+                      if (error != null) {
+                        _showErrorSnackBar(error);
+                      }
+                      return const SizedBox.shrink();
+                    },
+                  ),
+                ],
               ),
               floatingActionButton: Selector<CreateEntryViewModel, ({bool canSave, bool isSaving})>(
                 selector: (context, viewModel) => (canSave: viewModel.canSave, isSaving: viewModel.isSaving),
@@ -187,6 +200,20 @@ class CreateEntryScreenState extends State<CreateEntryScreen> {
         ),
       ),
     );
+  }
+
+  void _showErrorSnackBar(CreateEntryError error) {
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(switch (error) {
+            CreateEntryError.saveEntry => 'Error saving entry',
+            CreateEntryError.loadEntry => 'Error loading entry',
+          }),
+        ),
+      );
+      _viewModel.resetError();
+    });
   }
 
   void _validateForms() {
