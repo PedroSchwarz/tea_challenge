@@ -2,8 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:gap/gap.dart';
 import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
-import 'package:tea_challenge/app/dependencies/locator.dart';
-import 'package:tea_challenge/app/theming/app_spacing.dart';
+import 'package:tea_challenge/app/app.dart';
 import 'package:tea_challenge/app/ui/sizing_constants.dart';
 import 'package:tea_challenge/features/entries/data/models/entry.dart';
 import 'package:tea_challenge/features/entries/data/models/water_progress.dart';
@@ -50,220 +49,239 @@ class _HomeScreenState extends State<HomeScreen> {
 
     return ChangeNotifierProvider.value(
       value: _viewModel,
-      child: Scaffold(
-        body: Stack(
-          children: [
-            RefreshIndicator(
-              onRefresh: _viewModel.refresh,
-              edgeOffset: SizingConstants.refreshIndicatorEdgeOffset,
-              child: CustomScrollView(
-                slivers: [
-                  SliverAppBar.medium(
-                    title: const Text('Home'),
-                    bottom: PreferredSize(
-                      preferredSize: const Size(double.infinity, AppSpacing.xs),
-                      child: Selector<HomeViewModel, bool>(
-                        selector: (context, viewModel) => viewModel.isLoading || viewModel.isRefreshing,
-                        builder: (context, showProgress, child) => showProgress ? const LinearProgressIndicator() : child!,
-                        child: const SizedBox.shrink(),
-                      ),
-                    ),
-                  ),
-                  SliverToBoxAdapter(
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.stretch,
-                      children: [
-                        Selector<HomeViewModel, UserData>(
-                          selector: (context, viewModel) => viewModel.userData,
-                          builder: (context, userData, child) {
-                            return ListTile(
-                              title: Text('Hello, ${userData.name}!', style: theme.textTheme.titleLarge),
-                              subtitle:
-                                  !userData.wasUpdated ? Text('Did you know you can update your profile?', style: theme.textTheme.bodyMedium) : null,
-                              trailing: const Icon(Icons.chevron_right),
-                              onTap: () {},
-                            );
-                          },
-                        ),
-                        const Gap(AppSpacing.md),
-                        // Main Progress Rings
-                        Padding(
-                          padding: const EdgeInsets.all(AppSpacing.md),
-                          child: LayoutBuilder(
-                            builder: (context, constraints) {
-                              final isLandscape = constraints.maxWidth > AppSpacing.maxWidthLandscape;
-                              final maxWidth = isLandscape ? AppSpacing.maxWidthLandscape : constraints.maxWidth;
-                              final ringSize = (maxWidth / 2) - AppSpacing.md;
+      child: AppResponsiveLayout(
+        builder: (context, constraints, isLandscape, maxWidth) {
+          // Get half of the width and subtract the margin between the rings (2)
+          // AND
+          // WHEN landscape, subtract 100px from the ring size
+          final ringSize = (maxWidth / 2) - (AppSpacing.md * 2) - (isLandscape ? 100 : 0);
 
-                              return Column(
-                                crossAxisAlignment: CrossAxisAlignment.stretch,
-                                spacing: AppSpacing.md,
-                                children: [
-                                  Wrap(
-                                    spacing: AppSpacing.md,
-                                    runSpacing: AppSpacing.md,
-                                    crossAxisAlignment: WrapCrossAlignment.center,
-                                    alignment: WrapAlignment.spaceBetween,
-                                    children: [
-                                      Selector<HomeViewModel, FoodProgress>(
-                                        selector: (context, viewModel) => viewModel.foodProgress,
-                                        builder: (context, progress, child) {
-                                          return MainProgressRing(
-                                            progressPercentage: progress.caloriesProgressPercentage,
-                                            topLabel: '${progress.totalCalories.toInt()}',
-                                            middleLabel: 'of ${progress.caloriesGoal.toInt()} kcal',
-                                            bottomLabel: '${(progress.caloriesProgressPercentage * 100).toInt()}%',
-                                            color: Colors.orange,
-                                            size: ringSize,
-                                          );
-                                        },
-                                      ),
-                                      Selector<HomeViewModel, WaterProgress>(
-                                        selector: (context, viewModel) => viewModel.waterProgress,
-                                        builder: (context, progress, child) {
-                                          return WaterCupProgress(
-                                            progressPercentage: progress.progressPercentage,
-                                            topLabel: '${progress.totalAmountInLiters.toStringAsFixed(1)}L',
-                                            middleLabel: 'of ${progress.goalInLiters}L',
-                                            bottomLabel: '${(progress.progressPercentage * 100).toInt()}%',
-                                            color: Colors.blue,
-                                            size: ringSize,
-                                          );
-                                        },
-                                      ),
-                                      if (isLandscape)
-                                        Selector<HomeViewModel, ({FoodProgress foodProgress, WaterProgress waterProgress})>(
-                                          selector:
-                                              (context, viewModel) => (foodProgress: viewModel.foodProgress, waterProgress: viewModel.waterProgress),
-                                          builder: (context, data, child) {
-                                            return GoalDetailsSection(foodProgress: data.foodProgress, waterProgress: data.waterProgress);
-                                          },
-                                        ),
-                                    ],
-                                  ),
-                                  if (!isLandscape) ...[
-                                    Selector<HomeViewModel, ({FoodProgress foodProgress, WaterProgress waterProgress})>(
-                                      selector:
-                                          (context, viewModel) => (foodProgress: viewModel.foodProgress, waterProgress: viewModel.waterProgress),
-                                      builder: (context, data, child) {
-                                        return GoalDetailsSection(foodProgress: data.foodProgress, waterProgress: data.waterProgress);
-                                      },
-                                    ),
-                                  ],
-                                ],
-                              );
-                            },
+          return Scaffold(
+            body: SafeArea(
+              top: isLandscape,
+              bottom: false,
+              child: Stack(
+                children: [
+                  RefreshIndicator(
+                    onRefresh: _viewModel.refresh,
+                    edgeOffset: SizingConstants.refreshIndicatorEdgeOffset,
+                    child: CustomScrollView(
+                      slivers: [
+                        SliverAppBar.medium(
+                          title: const Text('Home'),
+                          bottom: PreferredSize(
+                            preferredSize: const Size(double.infinity, AppSpacing.xs),
+                            child: Selector<HomeViewModel, bool>(
+                              selector: (context, viewModel) => viewModel.isLoading || viewModel.isRefreshing,
+                              builder: (context, showProgress, child) => showProgress ? const LinearProgressIndicator() : child!,
+                              child: const SizedBox.shrink(),
+                            ),
                           ),
                         ),
-                        const Gap(AppSpacing.md),
-                        // Progress History Section
-                        Selector<HomeViewModel, ({List<HistoryData> historyData, bool isLoading, DateTime selectedDate})>(
-                          selector:
-                              (context, viewModel) => (
-                                historyData: viewModel.historyData,
-                                isLoading: viewModel.isLoading,
-                                selectedDate: viewModel.selectedDate,
+                        SliverToBoxAdapter(
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.stretch,
+                            children: [
+                              Selector<HomeViewModel, UserData>(
+                                selector: (context, viewModel) => viewModel.userData,
+                                builder: (context, userData, child) {
+                                  return ListTile(
+                                    title: Text('Hello, ${userData.name}!', style: theme.textTheme.titleLarge),
+                                    subtitle:
+                                        !userData.wasUpdated
+                                            ? Text('Did you know you can update your profile?', style: theme.textTheme.bodyMedium)
+                                            : null,
+                                    trailing: const Icon(Icons.chevron_right),
+                                    onTap: () {},
+                                  );
+                                },
                               ),
-                          builder: (context, data, child) {
-                            return ProgressionHistorySection(
-                              historyData: data.historyData,
-                              isLoading: data.isLoading,
-                              selectedDate: DateUtils.dateOnly(data.selectedDate),
-                              onTap: (dayData) => _viewModel.selectDate(dayData.date),
+                              const Gap(AppSpacing.md),
+                              // Main Progress Rings
+                              Padding(
+                                padding: const EdgeInsets.all(AppSpacing.md),
+                                child: Column(
+                                  crossAxisAlignment: CrossAxisAlignment.stretch,
+                                  spacing: AppSpacing.md,
+                                  children: [
+                                    Wrap(
+                                      spacing: AppSpacing.sm,
+                                      runSpacing: AppSpacing.md,
+                                      crossAxisAlignment: WrapCrossAlignment.center,
+                                      alignment: WrapAlignment.spaceBetween,
+                                      children: [
+                                        Selector<HomeViewModel, FoodProgress>(
+                                          selector: (context, viewModel) => viewModel.foodProgress,
+                                          builder: (context, progress, child) {
+                                            return MainProgressRing(
+                                              progressPercentage: progress.caloriesProgressPercentage,
+                                              topLabel: '${progress.totalCalories.toInt()}',
+                                              middleLabel: 'of ${progress.caloriesGoal.toInt()} kcal',
+                                              bottomLabel: '${(progress.caloriesProgressPercentage * 100).toInt()}%',
+                                              color: Colors.orange,
+                                              size: ringSize,
+                                            );
+                                          },
+                                        ),
+                                        Selector<HomeViewModel, WaterProgress>(
+                                          selector: (context, viewModel) => viewModel.waterProgress,
+                                          builder: (context, progress, child) {
+                                            return WaterCupProgress(
+                                              progressPercentage: progress.progressPercentage,
+                                              topLabel: '${progress.totalAmountInLiters.toStringAsFixed(1)}L',
+                                              middleLabel: 'of ${progress.goalInLiters}L',
+                                              bottomLabel: '${(progress.progressPercentage * 100).toInt()}%',
+                                              color: Colors.blue,
+                                              size: ringSize,
+                                            );
+                                          },
+                                        ),
+                                        if (isLandscape)
+                                          Selector<HomeViewModel, ({FoodProgress foodProgress, WaterProgress waterProgress})>(
+                                            selector:
+                                                (context, viewModel) => (
+                                                  foodProgress: viewModel.foodProgress,
+                                                  waterProgress: viewModel.waterProgress,
+                                                ),
+                                            builder: (context, data, child) {
+                                              return GoalDetailsSection(foodProgress: data.foodProgress, waterProgress: data.waterProgress);
+                                            },
+                                          ),
+                                      ],
+                                    ),
+                                    if (!isLandscape) ...[
+                                      Selector<HomeViewModel, ({FoodProgress foodProgress, WaterProgress waterProgress})>(
+                                        selector:
+                                            (context, viewModel) => (foodProgress: viewModel.foodProgress, waterProgress: viewModel.waterProgress),
+                                        builder: (context, data, child) {
+                                          return GoalDetailsSection(foodProgress: data.foodProgress, waterProgress: data.waterProgress);
+                                        },
+                                      ),
+                                    ],
+                                  ],
+                                ),
+                              ),
+                              const Gap(AppSpacing.md),
+                              // Progress History Section
+                              Selector<HomeViewModel, ({List<HistoryData> historyData, bool isLoading, DateTime selectedDate})>(
+                                selector:
+                                    (context, viewModel) => (
+                                      historyData: viewModel.historyData,
+                                      isLoading: viewModel.isLoading,
+                                      selectedDate: viewModel.selectedDate,
+                                    ),
+                                builder: (context, data, child) {
+                                  return ProgressionHistorySection(
+                                    historyData: data.historyData,
+                                    isLoading: data.isLoading,
+                                    selectedDate: DateUtils.dateOnly(data.selectedDate),
+                                    onTap: (dayData) => _viewModel.selectDate(dayData.date),
+                                  );
+                                },
+                              ),
+                              const Gap(AppSpacing.lg),
+                            ],
+                          ),
+                        ),
+                        Consumer<HomeViewModel>(
+                          builder: (context, viewModel, child) {
+                            if (viewModel.foodRecords.isNotEmpty || viewModel.waterRecords.isNotEmpty) {
+                              return PinnedHeaderSliver(
+                                child: EntryTypeSegment(selectedSegment: viewModel.selectedSegment, onSelected: viewModel.setSelectedSegment),
+                              );
+                            }
+                            return const SliverToBoxAdapter(child: SizedBox.shrink());
+                          },
+                        ),
+                        Consumer<HomeViewModel>(
+                          builder: (context, viewModel, child) {
+                            if (viewModel.isLoading) {
+                              return const SliverFillRemaining(hasScrollBody: false, child: Center(child: CircularProgressIndicator()));
+                            }
+
+                            if (viewModel.noRecords) {
+                              return const SliverFillRemaining(hasScrollBody: false, child: EmptyEntriesContent());
+                            }
+
+                            return EntriesListContent(
+                              entries: viewModel.entries,
+                              enabled: viewModel.areActionsEnabled,
+                              onDismiss: _viewModel.setEntryToDelete,
+                              onTap: (entry) async {
+                                if (context.mounted) {
+                                  final _ = await context.pushNamed(
+                                    CreateEntryScreen.routeName,
+                                    queryParameters: {
+                                      'id': entry.id.toString(),
+                                      'type': switch (entry) {
+                                        WaterEntry() => EntryType.water.value,
+                                        FoodEntry() => EntryType.food.value,
+                                        _ => EntryType.food.value,
+                                      },
+                                    },
+                                  );
+                                  _viewModel.refresh();
+                                }
+                              },
                             );
                           },
                         ),
-                        const Gap(AppSpacing.lg),
+                        const SliverToBoxAdapter(child: Gap(SizingConstants.homeBottomPadding)),
                       ],
                     ),
                   ),
-                  Consumer<HomeViewModel>(
-                    builder: (context, viewModel, child) {
-                      if (viewModel.foodRecords.isNotEmpty || viewModel.waterRecords.isNotEmpty) {
-                        return PinnedHeaderSliver(
-                          child: EntryTypeSegment(selectedSegment: viewModel.selectedSegment, onSelected: viewModel.setSelectedSegment),
-                        );
+                  Selector<HomeViewModel, bool>(
+                    selector: (context, viewModel) => viewModel.showDeleteEntryDialog,
+                    builder: (context, showDeleteEntryDialog, child) {
+                      if (showDeleteEntryDialog) {
+                        _showDeleteEntryDialog();
                       }
-                      return const SliverToBoxAdapter(child: SizedBox.shrink());
+                      return const SizedBox.shrink();
                     },
                   ),
-                  Consumer<HomeViewModel>(
-                    builder: (context, viewModel, child) {
-                      if (viewModel.isLoading) {
-                        return const SliverFillRemaining(hasScrollBody: false, child: Center(child: CircularProgressIndicator()));
+                  Selector<HomeViewModel, bool>(
+                    selector: (context, viewModel) => viewModel.showUndoDeleteEntry,
+                    builder: (context, showUndoDeleteEntry, child) {
+                      if (showUndoDeleteEntry) {
+                        _showUndoDeleteEntrySnackBar();
                       }
-
-                      if (viewModel.noRecords) {
-                        return const SliverFillRemaining(hasScrollBody: false, child: EmptyEntriesContent());
-                      }
-
-                      return EntriesListContent(
-                        entries: viewModel.entries,
-                        enabled: viewModel.areActionsEnabled,
-                        onDismiss: _viewModel.setEntryToDelete,
-                        onTap: (entry) async {
-                          if (context.mounted) {
-                            final _ = await context.pushNamed(
-                              CreateEntryScreen.routeName,
-                              queryParameters: {
-                                'id': entry.id.toString(),
-                                'type': switch (entry) {
-                                  WaterEntry() => EntryType.water.value,
-                                  FoodEntry() => EntryType.food.value,
-                                  _ => EntryType.food.value,
-                                },
-                              },
-                            );
-                            _viewModel.refresh();
-                          }
-                        },
-                      );
+                      return const SizedBox.shrink();
                     },
                   ),
-                  const SliverToBoxAdapter(child: Gap(SizingConstants.homeBottomPadding)),
+                  Selector<HomeViewModel, HomeError?>(
+                    selector: (context, viewModel) => viewModel.error,
+                    builder: (context, error, child) {
+                      if (error != null) {
+                        _showErrorSnackBar(error);
+                      }
+                      return const SizedBox.shrink();
+                    },
+                  ),
                 ],
               ),
             ),
-            Selector<HomeViewModel, bool>(
-              selector: (context, viewModel) => viewModel.showDeleteEntryDialog,
-              builder: (context, showDeleteEntryDialog, child) {
-                if (showDeleteEntryDialog) {
-                  _showDeleteEntryDialog();
-                }
-                return const SizedBox.shrink();
+            floatingActionButton: Selector<HomeViewModel, bool>(
+              selector: (context, viewModel) => viewModel.areActionsEnabled,
+              builder: (context, areActionsEnabled, child) {
+                return Visibility(
+                  visible: areActionsEnabled,
+                  child: FloatingActionButton.extended(
+                    tooltip: 'Add Entry',
+                    onPressed: () async {
+                      if (context.mounted) {
+                        final _ = await context.pushNamed(CreateEntryScreen.routeName);
+                        _viewModel.refresh();
+                      }
+                    },
+                    label: const Text('Add Entry'),
+                    icon: const Icon(Icons.add),
+                  ),
+                );
               },
             ),
-            Selector<HomeViewModel, bool>(
-              selector: (context, viewModel) => viewModel.showUndoDeleteEntry,
-              builder: (context, showUndoDeleteEntry, child) {
-                if (showUndoDeleteEntry) {
-                  _showUndoDeleteEntrySnackBar();
-                }
-                return const SizedBox.shrink();
-              },
-            ),
-          ],
-        ),
-        floatingActionButton: Selector<HomeViewModel, bool>(
-          selector: (context, viewModel) => viewModel.areActionsEnabled,
-          builder: (context, areActionsEnabled, child) {
-            return Visibility(
-              visible: areActionsEnabled,
-              child: FloatingActionButton.extended(
-                tooltip: 'Add Entry',
-                onPressed: () async {
-                  if (context.mounted) {
-                    final _ = await context.pushNamed(CreateEntryScreen.routeName);
-                    _viewModel.refresh();
-                  }
-                },
-                label: const Text('Add Entry'),
-                icon: const Icon(Icons.add),
-              ),
-            );
-          },
-        ),
-        floatingActionButtonLocation: FloatingActionButtonLocation.centerFloat,
+            floatingActionButtonLocation: FloatingActionButtonLocation.centerFloat,
+          );
+        },
       ),
     );
   }
@@ -298,6 +316,27 @@ class _HomeScreenState extends State<HomeScreen> {
           action: SnackBarAction(label: "Undo", onPressed: _viewModel.undoDeleteEntry),
         ),
       );
+    });
+  }
+
+  void _showErrorSnackBar(HomeError error) {
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(switch (error) {
+            HomeError.deleteEntry => 'Error deleting entry',
+            HomeError.loadUser => 'Error loading user',
+            HomeError.loadFoodRecords => 'Error loading food records',
+            HomeError.loadWaterRecords => 'Error loading water records',
+            HomeError.loadFoodProgress => 'Error loading food progress',
+            HomeError.loadWaterProgress => 'Error loading water progress',
+            HomeError.loadEntries => 'Error loading entries',
+            HomeError.loadHistoryData => 'Error loading history data',
+            HomeError.loadDataForSelectedDate => 'Error loading data for selected date',
+          }),
+        ),
+      );
+      _viewModel.resetError();
     });
   }
 }

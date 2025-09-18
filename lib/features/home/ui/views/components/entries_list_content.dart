@@ -19,6 +19,7 @@ class EntriesListContent extends StatelessWidget {
         final entry = entries[index];
 
         return EntryItem(
+          key: ValueKey(entry.id),
           entry: entry,
           enabled: enabled,
           onDismiss: () {

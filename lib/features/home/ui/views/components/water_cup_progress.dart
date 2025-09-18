@@ -178,8 +178,8 @@ class _CupClipper extends CustomClipper<Path> {
     final height = size.height;
 
     // Create cup shape (wider at top, narrower at bottom)
-    final topWidth = width * 0.8;
-    final bottomWidth = width * 0.6;
+    final topWidth = width * 0.6;
+    final bottomWidth = width * 0.4;
     final cupHeight = height * 0.8;
     final topY = height * 0.1;
     final bottomY = topY + cupHeight;
@@ -209,14 +209,14 @@ class _CupOutlinePainter extends CustomPainter {
         Paint()
           ..color = color
           ..style = PaintingStyle.stroke
-          ..strokeWidth = 15.0;
+          ..strokeWidth = 8.0;
 
     final path = Path();
     final width = size.width;
     final height = size.height;
 
-    final topWidth = width * 0.8;
-    final bottomWidth = width * 0.6;
+    final topWidth = width * 0.6;
+    final bottomWidth = width * 0.4;
     final cupHeight = height * 0.8;
     final topY = height * 0.1;
     final bottomY = topY + cupHeight;
@@ -249,8 +249,8 @@ class _WaterPainter extends CustomPainter {
     final width = size.width;
     final height = size.height;
 
-    final topWidth = width * 0.8;
-    final bottomWidth = width * 0.6;
+    final topWidth = width * 0.6;
+    final bottomWidth = width * 0.4;
     final cupHeight = height * 0.8;
     final topY = height * 0.1;
     final bottomY = topY + cupHeight;

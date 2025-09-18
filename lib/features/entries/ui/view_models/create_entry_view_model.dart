@@ -27,7 +27,7 @@ class CreateEntryViewModel extends ChangeNotifier {
   bool _isLoading = false;
   bool _isSaving = false;
   int? _editingId;
-
+  CreateEntryError? _error;
   // Food form fields
   String _name = '';
   String _caloriesPerPortion = '';
@@ -44,7 +44,7 @@ class CreateEntryViewModel extends ChangeNotifier {
   WaterQuantity get selectedQuantity => _selectedQuantity;
   bool get isLoading => _isLoading;
   bool get isSaving => _isSaving;
-
+  CreateEntryError? get error => _error;
   // Food form getters
   String get name => _name;
   String get caloriesPerPortion => _caloriesPerPortion;
@@ -105,6 +105,10 @@ class CreateEntryViewModel extends ChangeNotifier {
       } else {
         await _loadWaterRecord(id);
       }
+    } catch (e, s) {
+      _logger.severe('Error loading entry', e, s);
+      _error = CreateEntryError.loadEntry;
+      notifyListeners();
     } finally {
       _isLoading = false;
       notifyListeners();
@@ -216,6 +220,7 @@ class CreateEntryViewModel extends ChangeNotifier {
       return true;
     } catch (e, s) {
       _logger.severe('Error saving entry', e, s);
+      _error = CreateEntryError.saveEntry;
       return false;
     } finally {
       _isSaving = false;
@@ -267,4 +272,11 @@ class CreateEntryViewModel extends ChangeNotifier {
     _editingId = null;
     notifyListeners();
   }
+
+  void resetError() {
+    _error = null;
+    notifyListeners();
+  }
 }
+
+enum CreateEntryError { saveEntry, loadEntry }
