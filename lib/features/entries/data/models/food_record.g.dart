@@ -8,7 +8,7 @@ part of 'food_record.dart';
 
 _FoodRecord _$FoodRecordFromJson(Map<String, dynamic> json) => _FoodRecord(
   name: json['name'] as String,
-  caloriesPerPortion: (json['caloriesPerPortion'] as num).toDouble(),
+  calories: (json['calories'] as num).toDouble(),
   portionSize: (json['portionSize'] as num).toDouble(),
   carbs: (json['carbs'] as num).toDouble(),
   protein: (json['protein'] as num).toDouble(),
@@ -23,7 +23,7 @@ _FoodRecord _$FoodRecordFromJson(Map<String, dynamic> json) => _FoodRecord(
 Map<String, dynamic> _$FoodRecordToJson(_FoodRecord instance) =>
     <String, dynamic>{
       'name': instance.name,
-      'caloriesPerPortion': instance.caloriesPerPortion,
+      'calories': instance.calories,
       'portionSize': instance.portionSize,
       'carbs': instance.carbs,
       'protein': instance.protein,

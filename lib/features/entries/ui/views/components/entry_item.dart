@@ -48,7 +48,7 @@ class EntryItem extends StatelessWidget {
           children: [
             Text(switch (entry) {
               WaterEntry() => 'Water',
-              FoodEntry() => 'Food',
+              FoodEntry() => 'Food x ${(entry as FoodEntry).foodRecord.portionSize.toStringAsFixed(1)}',
               _ => 'Unknown',
             }),
             if (entry is FoodEntry) ...[

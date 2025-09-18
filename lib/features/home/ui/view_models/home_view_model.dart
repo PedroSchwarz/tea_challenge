@@ -269,10 +269,10 @@ class HomeViewModel extends ChangeNotifier {
     switch (entry) {
       case FoodEntry(foodRecord: final foodRecord):
         _foodProgress = _foodProgress.copyWith(
-          totalCalories: _foodProgress.totalCalories - foodRecord.caloriesPerPortion * foodRecord.portionSize,
-          totalCarbs: _foodProgress.totalCarbs - foodRecord.carbs,
-          totalProtein: _foodProgress.totalProtein - foodRecord.protein,
-          totalFat: _foodProgress.totalFat - foodRecord.fat,
+          totalCalories: _foodProgress.totalCalories - foodRecord.totalCalories,
+          totalCarbs: _foodProgress.totalCarbs - foodRecord.totalCarbs,
+          totalProtein: _foodProgress.totalProtein - foodRecord.totalProtein,
+          totalFat: _foodProgress.totalFat - foodRecord.totalFat,
         );
         // Update cached progress for selected date
         final cachedFood = _cachedFoodProgress[_selectedDate];

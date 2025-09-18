@@ -5,6 +5,7 @@ import 'package:tea_challenge/features/entries/data/models/food_record.dart';
 
 abstract class FoodLocalDataSource {
   Future<void> insertFoodRecord(FoodRecord record);
+  Future<void> insertFoodRecords(List<FoodRecord> records);
   Future<List<FoodRecord>> getFoodRecords({DateTime? date});
   Future<FoodRecord?> getFoodRecord(int id);
   Future<void> updateFoodRecord(FoodRecord record);
@@ -22,13 +23,37 @@ class FoodLocalDataSourceImpl implements FoodLocalDataSource {
     await manager.create(
       (o) => o(
         name: record.name,
-        caloriesPerPortion: record.caloriesPerPortion,
+        caloriesPerPortion: record.calories,
         portionSize: record.portionSize,
         carbs: record.carbs,
         protein: record.protein,
         fat: record.fat,
       ),
     );
+  }
+
+  @override
+  Future<void> insertFoodRecords(List<FoodRecord> records) async {
+    await manager.bulkCreate((o) {
+      return records.map((record) {
+        final entry = o(
+          name: record.name,
+          caloriesPerPortion: record.calories,
+          portionSize: record.portionSize,
+          carbs: record.carbs,
+          protein: record.protein,
+          fat: record.fat,
+        );
+
+        final createdAt = record.createdAt;
+
+        if (createdAt != null) {
+          return entry.copyWith(createdAt: Value(createdAt));
+        } else {
+          return entry;
+        }
+      }).toList();
+    });
   }
 
   @override
@@ -41,7 +66,7 @@ class FoodLocalDataSourceImpl implements FoodLocalDataSource {
     final record = await manager.filter((filter) => filter.id(id)).getSingle();
     return FoodRecord(
       name: record.name,
-      caloriesPerPortion: record.caloriesPerPortion,
+      calories: record.caloriesPerPortion,
       portionSize: record.portionSize,
       carbs: record.carbs,
       protein: record.protein,
@@ -62,7 +87,7 @@ class FoodLocalDataSourceImpl implements FoodLocalDataSource {
       return records.map((record) {
         return FoodRecord(
           name: record.name,
-          caloriesPerPortion: record.caloriesPerPortion,
+          calories: record.caloriesPerPortion,
           portionSize: record.portionSize,
           carbs: record.carbs,
           protein: record.protein,
@@ -76,7 +101,7 @@ class FoodLocalDataSourceImpl implements FoodLocalDataSource {
       return records.map((record) {
         return FoodRecord(
           name: record.name,
-          caloriesPerPortion: record.caloriesPerPortion,
+          calories: record.caloriesPerPortion,
           portionSize: record.portionSize,
           carbs: record.carbs,
           protein: record.protein,
@@ -95,7 +120,7 @@ class FoodLocalDataSourceImpl implements FoodLocalDataSource {
         .update(
           (o) => o(
             name: Value(record.name),
-            caloriesPerPortion: Value(record.caloriesPerPortion),
+            caloriesPerPortion: Value(record.calories),
             portionSize: Value(record.portionSize),
             carbs: Value(record.carbs),
             protein: Value(record.protein),

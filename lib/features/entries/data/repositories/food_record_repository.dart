@@ -21,6 +21,15 @@ class FoodRecordRepository {
     }
   }
 
+  Future<void> insertFoodRecords(List<FoodRecord> records) async {
+    try {
+      await foodLocalDataSource.insertFoodRecords(records);
+    } catch (e, s) {
+      _logger.severe('Error inserting food records', e, s);
+      rethrow;
+    }
+  }
+
   Future<void> updateFoodRecord(FoodRecord record) async {
     try {
       await foodLocalDataSource.updateFoodRecord(record);
@@ -66,10 +75,10 @@ class FoodRecordRepository {
   }) async {
     try {
       final foodRecords = await getFoodRecords(date: date);
-      final totalCalories = foodRecords.fold(0.0, (sum, record) => sum + (record.caloriesPerPortion * record.portionSize));
-      final totalCarbs = foodRecords.fold(0.0, (sum, record) => sum + record.carbs);
-      final totalProtein = foodRecords.fold(0.0, (sum, record) => sum + record.protein);
-      final totalFat = foodRecords.fold(0.0, (sum, record) => sum + record.fat);
+      final totalCalories = foodRecords.fold(0.0, (sum, record) => sum + record.totalCalories);
+      final totalCarbs = foodRecords.fold(0.0, (sum, record) => sum + record.totalCarbs);
+      final totalProtein = foodRecords.fold(0.0, (sum, record) => sum + record.totalProtein);
+      final totalFat = foodRecords.fold(0.0, (sum, record) => sum + record.totalFat);
 
       return FoodProgress(
         totalCalories: totalCalories,
