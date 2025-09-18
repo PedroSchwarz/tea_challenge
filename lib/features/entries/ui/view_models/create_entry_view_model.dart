@@ -115,7 +115,7 @@ class CreateEntryViewModel extends ChangeNotifier {
     final record = await foodRecordRepository.getFoodRecord(id);
     if (record != null) {
       _name = record.name;
-      _caloriesPerPortion = record.caloriesPerPortion.toString();
+      _caloriesPerPortion = record.calories.toString();
       _portionSize = record.portionSize.toString();
       _carbs = record.carbs.toString();
       _protein = record.protein.toString();
@@ -227,7 +227,7 @@ class CreateEntryViewModel extends ChangeNotifier {
     final record = FoodRecord(
       id: _editingId,
       name: _name,
-      caloriesPerPortion: double.parse(_caloriesPerPortion),
+      calories: double.parse(_caloriesPerPortion),
       portionSize: double.parse(_portionSize),
       carbs: double.parse(_carbs),
       protein: double.parse(_protein),

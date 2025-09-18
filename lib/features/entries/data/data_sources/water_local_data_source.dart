@@ -5,6 +5,7 @@ import 'package:tea_challenge/features/entries/data/models/water_record.dart';
 
 abstract class WaterLocalDataSource {
   Future<void> insertWaterRecord(WaterRecord record);
+  Future<void> insertWaterRecords(List<WaterRecord> records);
   Future<List<WaterRecord>> getWaterRecords({DateTime? date});
   Future<WaterRecord?> getWaterRecord(int id);
   Future<void> updateWaterRecord(WaterRecord record);
@@ -20,6 +21,23 @@ class WaterLocalDataSourceImpl implements WaterLocalDataSource {
   @override
   Future<void> insertWaterRecord(WaterRecord record) async {
     await manager.create((o) => o(amountInMl: record.amountInMl));
+  }
+
+  @override
+  Future<void> insertWaterRecords(List<WaterRecord> records) async {
+    await manager.bulkCreate((o) {
+      return records.map((record) {
+        final entry = o(amountInMl: record.amountInMl);
+
+        final createdAt = record.createdAt;
+
+        if (createdAt != null) {
+          return entry.copyWith(createdAt: Value(createdAt));
+        } else {
+          return entry;
+        }
+      }).toList();
+    });
   }
 
   @override

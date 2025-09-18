@@ -15,7 +15,7 @@ T _$identity<T>(T value) => value;
 /// @nodoc
 mixin _$FoodRecord {
 
- String get name; double get caloriesPerPortion; double get portionSize; double get carbs; double get protein; double get fat; int? get id; DateTime? get createdAt;
+ String get name; double get calories; double get portionSize; double get carbs; double get protein; double get fat; int? get id; DateTime? get createdAt;
 /// Create a copy of FoodRecord
 /// with the given fields replaced by the non-null parameter values.
 @JsonKey(includeFromJson: false, includeToJson: false)
@@ -28,16 +28,16 @@ $FoodRecordCopyWith<FoodRecord> get copyWith => _$FoodRecordCopyWithImpl<FoodRec
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is FoodRecord&&(identical(other.name, name) || other.name == name)&&(identical(other.caloriesPerPortion, caloriesPerPortion) || other.caloriesPerPortion == caloriesPerPortion)&&(identical(other.portionSize, portionSize) || other.portionSize == portionSize)&&(identical(other.carbs, carbs) || other.carbs == carbs)&&(identical(other.protein, protein) || other.protein == protein)&&(identical(other.fat, fat) || other.fat == fat)&&(identical(other.id, id) || other.id == id)&&(identical(other.createdAt, createdAt) || other.createdAt == createdAt));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is FoodRecord&&(identical(other.name, name) || other.name == name)&&(identical(other.calories, calories) || other.calories == calories)&&(identical(other.portionSize, portionSize) || other.portionSize == portionSize)&&(identical(other.carbs, carbs) || other.carbs == carbs)&&(identical(other.protein, protein) || other.protein == protein)&&(identical(other.fat, fat) || other.fat == fat)&&(identical(other.id, id) || other.id == id)&&(identical(other.createdAt, createdAt) || other.createdAt == createdAt));
 }
 
 @JsonKey(includeFromJson: false, includeToJson: false)
 @override
-int get hashCode => Object.hash(runtimeType,name,caloriesPerPortion,portionSize,carbs,protein,fat,id,createdAt);
+int get hashCode => Object.hash(runtimeType,name,calories,portionSize,carbs,protein,fat,id,createdAt);
 
 @override
 String toString() {
-  return 'FoodRecord(name: $name, caloriesPerPortion: $caloriesPerPortion, portionSize: $portionSize, carbs: $carbs, protein: $protein, fat: $fat, id: $id, createdAt: $createdAt)';
+  return 'FoodRecord(name: $name, calories: $calories, portionSize: $portionSize, carbs: $carbs, protein: $protein, fat: $fat, id: $id, createdAt: $createdAt)';
 }
 
 
@@ -48,7 +48,7 @@ abstract mixin class $FoodRecordCopyWith<$Res>  {
   factory $FoodRecordCopyWith(FoodRecord value, $Res Function(FoodRecord) _then) = _$FoodRecordCopyWithImpl;
 @useResult
 $Res call({
- String name, double caloriesPerPortion, double portionSize, double carbs, double protein, double fat, int? id, DateTime? createdAt
+ String name, double calories, double portionSize, double carbs, double protein, double fat, int? id, DateTime? createdAt
 });
 
 
@@ -65,10 +65,10 @@ class _$FoodRecordCopyWithImpl<$Res>
 
 /// Create a copy of FoodRecord
 /// with the given fields replaced by the non-null parameter values.
-@pragma('vm:prefer-inline') @override $Res call({Object? name = null,Object? caloriesPerPortion = null,Object? portionSize = null,Object? carbs = null,Object? protein = null,Object? fat = null,Object? id = freezed,Object? createdAt = freezed,}) {
+@pragma('vm:prefer-inline') @override $Res call({Object? name = null,Object? calories = null,Object? portionSize = null,Object? carbs = null,Object? protein = null,Object? fat = null,Object? id = freezed,Object? createdAt = freezed,}) {
   return _then(_self.copyWith(
 name: null == name ? _self.name : name // ignore: cast_nullable_to_non_nullable
-as String,caloriesPerPortion: null == caloriesPerPortion ? _self.caloriesPerPortion : caloriesPerPortion // ignore: cast_nullable_to_non_nullable
+as String,calories: null == calories ? _self.calories : calories // ignore: cast_nullable_to_non_nullable
 as double,portionSize: null == portionSize ? _self.portionSize : portionSize // ignore: cast_nullable_to_non_nullable
 as double,carbs: null == carbs ? _self.carbs : carbs // ignore: cast_nullable_to_non_nullable
 as double,protein: null == protein ? _self.protein : protein // ignore: cast_nullable_to_non_nullable
@@ -160,10 +160,10 @@ return $default(_that);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( String name,  double caloriesPerPortion,  double portionSize,  double carbs,  double protein,  double fat,  int? id,  DateTime? createdAt)?  $default,{required TResult orElse(),}) {final _that = this;
+@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( String name,  double calories,  double portionSize,  double carbs,  double protein,  double fat,  int? id,  DateTime? createdAt)?  $default,{required TResult orElse(),}) {final _that = this;
 switch (_that) {
 case _FoodRecord() when $default != null:
-return $default(_that.name,_that.caloriesPerPortion,_that.portionSize,_that.carbs,_that.protein,_that.fat,_that.id,_that.createdAt);case _:
+return $default(_that.name,_that.calories,_that.portionSize,_that.carbs,_that.protein,_that.fat,_that.id,_that.createdAt);case _:
   return orElse();
 
 }
@@ -181,10 +181,10 @@ return $default(_that.name,_that.caloriesPerPortion,_that.portionSize,_that.carb
 /// }
 /// ```
 
-@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( String name,  double caloriesPerPortion,  double portionSize,  double carbs,  double protein,  double fat,  int? id,  DateTime? createdAt)  $default,) {final _that = this;
+@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( String name,  double calories,  double portionSize,  double carbs,  double protein,  double fat,  int? id,  DateTime? createdAt)  $default,) {final _that = this;
 switch (_that) {
 case _FoodRecord():
-return $default(_that.name,_that.caloriesPerPortion,_that.portionSize,_that.carbs,_that.protein,_that.fat,_that.id,_that.createdAt);case _:
+return $default(_that.name,_that.calories,_that.portionSize,_that.carbs,_that.protein,_that.fat,_that.id,_that.createdAt);case _:
   throw StateError('Unexpected subclass');
 
 }
@@ -201,10 +201,10 @@ return $default(_that.name,_that.caloriesPerPortion,_that.portionSize,_that.carb
 /// }
 /// ```
 
-@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( String name,  double caloriesPerPortion,  double portionSize,  double carbs,  double protein,  double fat,  int? id,  DateTime? createdAt)?  $default,) {final _that = this;
+@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( String name,  double calories,  double portionSize,  double carbs,  double protein,  double fat,  int? id,  DateTime? createdAt)?  $default,) {final _that = this;
 switch (_that) {
 case _FoodRecord() when $default != null:
-return $default(_that.name,_that.caloriesPerPortion,_that.portionSize,_that.carbs,_that.protein,_that.fat,_that.id,_that.createdAt);case _:
+return $default(_that.name,_that.calories,_that.portionSize,_that.carbs,_that.protein,_that.fat,_that.id,_that.createdAt);case _:
   return null;
 
 }
@@ -215,12 +215,12 @@ return $default(_that.name,_that.caloriesPerPortion,_that.portionSize,_that.carb
 /// @nodoc
 @JsonSerializable()
 
-class _FoodRecord implements FoodRecord {
-  const _FoodRecord({required this.name, required this.caloriesPerPortion, required this.portionSize, required this.carbs, required this.protein, required this.fat, this.id, this.createdAt});
+class _FoodRecord extends FoodRecord {
+  const _FoodRecord({required this.name, required this.calories, required this.portionSize, required this.carbs, required this.protein, required this.fat, this.id, this.createdAt}): super._();
   factory _FoodRecord.fromJson(Map<String, dynamic> json) => _$FoodRecordFromJson(json);
 
 @override final  String name;
-@override final  double caloriesPerPortion;
+@override final  double calories;
 @override final  double portionSize;
 @override final  double carbs;
 @override final  double protein;
@@ -241,16 +241,16 @@ Map<String, dynamic> toJson() {
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is _FoodRecord&&(identical(other.name, name) || other.name == name)&&(identical(other.caloriesPerPortion, caloriesPerPortion) || other.caloriesPerPortion == caloriesPerPortion)&&(identical(other.portionSize, portionSize) || other.portionSize == portionSize)&&(identical(other.carbs, carbs) || other.carbs == carbs)&&(identical(other.protein, protein) || other.protein == protein)&&(identical(other.fat, fat) || other.fat == fat)&&(identical(other.id, id) || other.id == id)&&(identical(other.createdAt, createdAt) || other.createdAt == createdAt));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is _FoodRecord&&(identical(other.name, name) || other.name == name)&&(identical(other.calories, calories) || other.calories == calories)&&(identical(other.portionSize, portionSize) || other.portionSize == portionSize)&&(identical(other.carbs, carbs) || other.carbs == carbs)&&(identical(other.protein, protein) || other.protein == protein)&&(identical(other.fat, fat) || other.fat == fat)&&(identical(other.id, id) || other.id == id)&&(identical(other.createdAt, createdAt) || other.createdAt == createdAt));
 }
 
 @JsonKey(includeFromJson: false, includeToJson: false)
 @override
-int get hashCode => Object.hash(runtimeType,name,caloriesPerPortion,portionSize,carbs,protein,fat,id,createdAt);
+int get hashCode => Object.hash(runtimeType,name,calories,portionSize,carbs,protein,fat,id,createdAt);
 
 @override
 String toString() {
-  return 'FoodRecord(name: $name, caloriesPerPortion: $caloriesPerPortion, portionSize: $portionSize, carbs: $carbs, protein: $protein, fat: $fat, id: $id, createdAt: $createdAt)';
+  return 'FoodRecord(name: $name, calories: $calories, portionSize: $portionSize, carbs: $carbs, protein: $protein, fat: $fat, id: $id, createdAt: $createdAt)';
 }
 
 
@@ -261,7 +261,7 @@ abstract mixin class _$FoodRecordCopyWith<$Res> implements $FoodRecordCopyWith<$
   factory _$FoodRecordCopyWith(_FoodRecord value, $Res Function(_FoodRecord) _then) = __$FoodRecordCopyWithImpl;
 @override @useResult
 $Res call({
- String name, double caloriesPerPortion, double portionSize, double carbs, double protein, double fat, int? id, DateTime? createdAt
+ String name, double calories, double portionSize, double carbs, double protein, double fat, int? id, DateTime? createdAt
 });
 
 
@@ -278,10 +278,10 @@ class __$FoodRecordCopyWithImpl<$Res>
 
 /// Create a copy of FoodRecord
 /// with the given fields replaced by the non-null parameter values.
-@override @pragma('vm:prefer-inline') $Res call({Object? name = null,Object? caloriesPerPortion = null,Object? portionSize = null,Object? carbs = null,Object? protein = null,Object? fat = null,Object? id = freezed,Object? createdAt = freezed,}) {
+@override @pragma('vm:prefer-inline') $Res call({Object? name = null,Object? calories = null,Object? portionSize = null,Object? carbs = null,Object? protein = null,Object? fat = null,Object? id = freezed,Object? createdAt = freezed,}) {
   return _then(_FoodRecord(
 name: null == name ? _self.name : name // ignore: cast_nullable_to_non_nullable
-as String,caloriesPerPortion: null == caloriesPerPortion ? _self.caloriesPerPortion : caloriesPerPortion // ignore: cast_nullable_to_non_nullable
+as String,calories: null == calories ? _self.calories : calories // ignore: cast_nullable_to_non_nullable
 as double,portionSize: null == portionSize ? _self.portionSize : portionSize // ignore: cast_nullable_to_non_nullable
 as double,carbs: null == carbs ? _self.carbs : carbs // ignore: cast_nullable_to_non_nullable
 as double,protein: null == protein ? _self.protein : protein // ignore: cast_nullable_to_non_nullable

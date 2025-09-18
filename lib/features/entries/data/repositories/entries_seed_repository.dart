@@ -1,4 +1,4 @@
-import 'package:flutter/cupertino.dart';
+import 'package:flutter/material.dart';
 import 'package:logging/logging.dart';
 import 'package:tea_challenge/features/entries/data/data_sources/entries_seed_local_data_source.dart';
 import 'package:tea_challenge/features/entries/data/data_sources/entries_seed_remote_data_source.dart';
@@ -43,14 +43,18 @@ class EntriesSeedRepository {
       // Get seed data from remote source
       final seedData = await entriesSeedRemoteDataSource.getSeedData();
 
-      // Insert food records
-      for (final foodRecord in seedData.foodRecords) {
-        await foodRecordRepository.insertFoodRecord(foodRecord);
-      }
+      // Insert 3 days of seed data
+      for (int i = 0; i < 3; i++) {
+        // Get the date for the current day
+        final date = DateUtils.dateOnly(DateTime.now().subtract(Duration(days: i)));
 
-      // Insert water records
-      for (final waterRecord in seedData.waterRecords) {
-        await waterRecordRepository.insertWaterRecord(waterRecord);
+        // Map the seed data to the current day
+        final foodRecords = seedData.foodRecords.map((record) => record.copyWith(createdAt: date)).toList();
+        final waterRecords = seedData.waterRecords.map((record) => record.copyWith(createdAt: date)).toList();
+
+        // Insert the seed data for the current day
+        await foodRecordRepository.insertFoodRecords(foodRecords);
+        await waterRecordRepository.insertWaterRecords(waterRecords);
       }
 
       // Mark as initialized

@@ -1,7 +1,7 @@
 import 'dart:convert';
 import 'package:flutter/services.dart';
 import 'package:logging/logging.dart';
-import 'package:tea_challenge/features/entries/data/data_sources/seed_data.dart';
+import 'package:tea_challenge/features/entries/data/models/seed_data.dart';
 
 abstract class EntriesSeedRemoteDataSource {
   Future<SeedData> getSeedData();
