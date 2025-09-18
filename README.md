@@ -1,4 +1,4 @@
-# Tea Challenge
+# <img src="/assets/logo/challenge_logo.png" alt="App Logo" width="64"/> Tea Challenge
 
 A Flutter application for tracking daily food and water intake with progress visualization and history management.
 
