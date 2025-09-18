@@ -278,10 +278,10 @@ class HomeViewModel extends ChangeNotifier {
         final cachedFood = _cachedFoodProgress[_selectedDate];
         if (cachedFood != null) {
           _cachedFoodProgress[_selectedDate] = cachedFood.copyWith(
-            totalCalories: cachedFood.totalCalories - foodRecord.caloriesPerPortion * foodRecord.portionSize,
-            totalCarbs: cachedFood.totalCarbs - foodRecord.carbs,
-            totalProtein: cachedFood.totalProtein - foodRecord.protein,
-            totalFat: cachedFood.totalFat - foodRecord.fat,
+            totalCalories: cachedFood.totalCalories - foodRecord.totalCalories,
+            totalCarbs: cachedFood.totalCarbs - foodRecord.totalCarbs,
+            totalProtein: cachedFood.totalProtein - foodRecord.totalProtein,
+            totalFat: cachedFood.totalFat - foodRecord.totalFat,
           );
         }
         // Update cached records for selected date
