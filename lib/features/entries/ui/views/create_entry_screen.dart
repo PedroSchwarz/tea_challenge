@@ -4,6 +4,7 @@ import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
 import 'package:tea_challenge/app/dependencies/locator.dart';
 import 'package:tea_challenge/app/theming/app_spacing.dart';
+import 'package:tea_challenge/app/theming/design_system/app_responsive_layout.dart';
 import 'package:tea_challenge/features/entries/domain/usecases/validate_numeric_field.dart';
 import 'package:tea_challenge/features/entries/ui/view_models/create_entry_view_model.dart';
 import 'package:tea_challenge/features/entries/ui/view_models/entry_type.dart';
@@ -95,91 +96,94 @@ class CreateEntryScreenState extends State<CreateEntryScreen> {
         onTap: () {
           FocusScope.of(context).unfocus();
         },
-        child: Scaffold(
-          appBar: AppBar(title: Text(widget.id != null ? 'Edit Entry' : 'Create Entry')),
-          body: Column(
-            children: [
-              Expanded(
-                child: Consumer<CreateEntryViewModel>(
-                  builder: (context, viewModel, child) {
-                    if (viewModel.isLoading) {
-                      return const Center(child: CircularProgressIndicator());
-                    }
+        child: AppResponsiveLayout(
+          builder: (context, constraints, isLandscape, maxWidth) {
+            return Scaffold(
+              appBar: AppBar(title: Text(widget.id != null ? 'Edit Entry' : 'Create Entry')),
+              body: SafeArea(
+                top: isLandscape,
+                bottom: false,
+                child: Column(
+                  children: [
+                    Expanded(
+                      child: Consumer<CreateEntryViewModel>(
+                        builder: (context, viewModel, child) {
+                          if (viewModel.isLoading) {
+                            return const Center(child: CircularProgressIndicator());
+                          }
 
-                    return SingleChildScrollView(
-                      child: Padding(
-                        padding: const EdgeInsets.all(AppSpacing.md),
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.stretch,
-                          children: [
-                            Text('Entry Type', style: theme.textTheme.headlineSmall),
-                            const Gap(AppSpacing.md),
-                            Selector<CreateEntryViewModel, EntryType>(
-                              selector: (context, viewModel) => viewModel.selectedType,
-                              builder: (context, selectedType, child) {
-                                return SegmentedButton(
-                                  segments:
-                                      EntryType.values.map((type) {
-                                        return ButtonSegment(value: type.value, label: Text(type.value));
-                                      }).toList(),
-                                  selected: {selectedType.value},
-                                  onSelectionChanged: (value) {
-                                    _viewModel.setSelectedType(value.first);
-                                  },
-                                );
-                              },
+                          return SingleChildScrollView(
+                            child: Padding(
+                              padding: const EdgeInsets.all(AppSpacing.md),
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.stretch,
+                                children: [
+                                  Text('Entry Type', style: theme.textTheme.headlineSmall),
+                                  const Gap(AppSpacing.md),
+                                  Selector<CreateEntryViewModel, EntryType>(
+                                    selector: (context, viewModel) => viewModel.selectedType,
+                                    builder: (context, selectedType, child) {
+                                      return SegmentedButton(
+                                        segments:
+                                            EntryType.values.map((type) {
+                                              return ButtonSegment(value: type.value, label: Text(type.value));
+                                            }).toList(),
+                                        selected: {selectedType.value},
+                                        onSelectionChanged: (value) {
+                                          _viewModel.setSelectedType(value.first);
+                                        },
+                                      );
+                                    },
+                                  ),
+                                  const Gap(AppSpacing.md),
+                                  Selector<CreateEntryViewModel, EntryType>(
+                                    selector: (context, viewModel) => viewModel.selectedType,
+                                    builder: (context, selectedType, child) {
+                                      if (selectedType == EntryType.food) {
+                                        return FoodEntryForm(
+                                          formKey: _foodFormKey,
+                                          nameController: _nameController,
+                                          caloriesPerPortionController: _caloriesPerPortionController,
+                                          portionSizeController: _portionSizeController,
+                                          carbsController: _carbsController,
+                                          proteinController: _proteinController,
+                                          fatController: _fatController,
+                                          validateNumericField: _validateNumericField,
+                                        );
+                                      } else {
+                                        return WaterEntryForm(
+                                          formKey: _waterFormKey,
+                                          waterController: _waterController,
+                                          onSelectedQuantity: _viewModel.setSelectedQuantity,
+                                          validateNumericField: _validateNumericField,
+                                        );
+                                      }
+                                    },
+                                  ),
+                                  const Gap(AppSpacing.xxxl),
+                                ],
+                              ),
                             ),
-                            const Gap(AppSpacing.md),
-                            Selector<CreateEntryViewModel, EntryType>(
-                              selector: (context, viewModel) => viewModel.selectedType,
-                              builder: (context, selectedType, child) {
-                                if (selectedType == EntryType.food) {
-                                  return FoodEntryForm(
-                                    formKey: _foodFormKey,
-                                    nameController: _nameController,
-                                    caloriesPerPortionController: _caloriesPerPortionController,
-                                    portionSizeController: _portionSizeController,
-                                    carbsController: _carbsController,
-                                    proteinController: _proteinController,
-                                    fatController: _fatController,
-                                    validateNumericField: _validateNumericField,
-                                  );
-                                } else {
-                                  return WaterEntryForm(
-                                    formKey: _waterFormKey,
-                                    waterController: _waterController,
-                                    onSelectedQuantity: _viewModel.setSelectedQuantity,
-                                    validateNumericField: _validateNumericField,
-                                  );
-                                }
-                              },
-                            ),
-                            const Gap(AppSpacing.xxxl),
-                          ],
-                        ),
+                          );
+                        },
                       ),
-                    );
-                  },
+                    ),
+                  ],
                 ),
               ),
-            ],
-          ),
-          floatingActionButton: Selector<CreateEntryViewModel, bool>(
-            selector: (context, viewModel) => viewModel.canSave,
-            builder: (context, canSave, child) {
-              return Selector<CreateEntryViewModel, bool>(
-                selector: (context, viewModel) => viewModel.isSaving,
-                builder: (context, isSaving, child) {
+              floatingActionButton: Selector<CreateEntryViewModel, ({bool canSave, bool isSaving})>(
+                selector: (context, viewModel) => (canSave: viewModel.canSave, isSaving: viewModel.isSaving),
+                builder: (context, data, child) {
                   return FloatingActionButton.extended(
-                    onPressed: canSave && !isSaving ? _saveEntry : _validateForms,
+                    onPressed: data.canSave && !data.isSaving ? _saveEntry : _validateForms,
                     label: const Text('Save'),
                     icon: const Icon(Icons.check),
                   );
                 },
-              );
-            },
-          ),
-          floatingActionButtonLocation: FloatingActionButtonLocation.centerFloat,
+              ),
+              floatingActionButtonLocation: FloatingActionButtonLocation.centerFloat,
+            );
+          },
         ),
       ),
     );

@@ -25,5 +25,5 @@ class AppSpacing {
   static const double xxxl = 64.0;
 
   /// Max width for landscape mode
-  static const double maxWidthLandscape = 500.0;
+  static const double maxWidthLandscape = 600.0;
 }
