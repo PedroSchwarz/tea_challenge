@@ -15,6 +15,7 @@ class ProgressionCard extends StatelessWidget {
     final theme = Theme.of(context);
 
     return Material(
+      borderRadius: BorderRadius.circular(AppSpacing.sm),
       child: InkWell(
         onTap: onTap,
         splashColor: theme.colorScheme.primary.withValues(alpha: 0.1),
