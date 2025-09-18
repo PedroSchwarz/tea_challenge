@@ -72,6 +72,7 @@ class HomeViewModel extends ChangeNotifier {
   bool _showUndoDeleteEntry = false;
   List<HistoryData> _historyData = [];
   DateTime _selectedDate = DateUtils.dateOnly(DateTime.now());
+  HomeError? _error;
 
   // Getters
   bool get isLoading => _isLoading;
@@ -94,6 +95,7 @@ class HomeViewModel extends ChangeNotifier {
   List<HistoryData> get historyData => _historyData;
   DateTime get selectedDate => _selectedDate;
   bool get areActionsEnabled => selectedDate == DateUtils.dateOnly(DateTime.now());
+  HomeError? get error => _error;
 
   Future<void> load() async {
     _isLoading = true;
@@ -131,6 +133,8 @@ class HomeViewModel extends ChangeNotifier {
       notifyListeners();
     } catch (e, s) {
       _logger.severe('Error loading food progress', e, s);
+      _error = HomeError.loadFoodProgress;
+      notifyListeners();
     }
   }
 
@@ -141,6 +145,8 @@ class HomeViewModel extends ChangeNotifier {
       notifyListeners();
     } catch (e, s) {
       _logger.severe('Error loading water progress', e, s);
+      _error = HomeError.loadWaterProgress;
+      notifyListeners();
     }
   }
 
@@ -150,6 +156,8 @@ class HomeViewModel extends ChangeNotifier {
       notifyListeners();
     } catch (e, s) {
       _logger.severe('Error loading food records', e, s);
+      _error = HomeError.loadFoodRecords;
+      notifyListeners();
     }
   }
 
@@ -159,6 +167,8 @@ class HomeViewModel extends ChangeNotifier {
       notifyListeners();
     } catch (e, s) {
       _logger.severe('Error loading water records', e, s);
+      _error = HomeError.loadWaterRecords;
+      notifyListeners();
     }
   }
 
@@ -170,19 +180,15 @@ class HomeViewModel extends ChangeNotifier {
   }
 
   Future<void> _loadEntries() async {
-    try {
-      final foodEntries = _foodRecords.map(Entry.food).toList();
-      final waterEntries = _waterRecords.map(Entry.water).toList();
+    final foodEntries = _foodRecords.map(Entry.food).toList();
+    final waterEntries = _waterRecords.map(Entry.water).toList();
 
-      _entries = [...foodEntries, ...waterEntries];
+    _entries = [...foodEntries, ...waterEntries];
 
-      // Sort by creation date (most recent first)
-      _sortEntries();
+    // Sort by creation date (most recent first)
+    _sortEntries();
 
-      notifyListeners();
-    } catch (e, s) {
-      _logger.severe('Error loading entries', e, s);
-    }
+    notifyListeners();
   }
 
   Future<void> _loadUser() async {
@@ -194,6 +200,8 @@ class HomeViewModel extends ChangeNotifier {
       }
     } catch (e, s) {
       _logger.severe('Error loading user', e, s);
+      _error = HomeError.loadUser;
+      notifyListeners();
     }
   }
 
@@ -229,6 +237,10 @@ class HomeViewModel extends ChangeNotifier {
               resetEntryToDelete();
             } catch (e, s) {
               _logger.severe('Error deleting food record', e, s);
+              _error = HomeError.deleteEntry;
+              undoDeleteEntry();
+            } finally {
+              notifyListeners();
             }
           }
         case WaterEntry(waterRecord: final waterRecord):
@@ -240,6 +252,10 @@ class HomeViewModel extends ChangeNotifier {
               resetEntryToDelete();
             } catch (e, s) {
               _logger.severe('Error deleting water record', e, s);
+              _error = HomeError.deleteEntry;
+              undoDeleteEntry();
+            } finally {
+              notifyListeners();
             }
           }
       }
@@ -305,6 +321,8 @@ class HomeViewModel extends ChangeNotifier {
       notifyListeners();
     } catch (e, s) {
       _logger.severe('Error loading history data', e, s);
+      _error = HomeError.loadHistoryData;
+      notifyListeners();
     }
   }
 
@@ -318,6 +336,8 @@ class HomeViewModel extends ChangeNotifier {
       await Future.wait([_loadFoodProgress(), _loadWaterProgress(), _loadEntries()]);
     } catch (e, s) {
       _logger.severe('Error loading data for selected date', e, s);
+      _error = HomeError.loadDataForSelectedDate;
+      notifyListeners();
     }
   }
 
@@ -327,9 +347,28 @@ class HomeViewModel extends ChangeNotifier {
     await load();
   }
 
+  void resetError() {
+    _error = null;
+    notifyListeners();
+  }
+
   @override
   void dispose() {
     userRepository.dispose();
+    _deleteEntryTimer?.cancel();
+    _deleteEntryTimer = null;
     super.dispose();
   }
+}
+
+enum HomeError {
+  deleteEntry,
+  loadUser,
+  loadFoodRecords,
+  loadWaterRecords,
+  loadFoodProgress,
+  loadWaterProgress,
+  loadEntries,
+  loadHistoryData,
+  loadDataForSelectedDate,
 }

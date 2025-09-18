@@ -248,6 +248,15 @@ class _HomeScreenState extends State<HomeScreen> {
                       return const SizedBox.shrink();
                     },
                   ),
+                  Selector<HomeViewModel, HomeError?>(
+                    selector: (context, viewModel) => viewModel.error,
+                    builder: (context, error, child) {
+                      if (error != null) {
+                        _showErrorSnackBar(error);
+                      }
+                      return const SizedBox.shrink();
+                    },
+                  ),
                 ],
               ),
             ),
@@ -307,6 +316,27 @@ class _HomeScreenState extends State<HomeScreen> {
           action: SnackBarAction(label: "Undo", onPressed: _viewModel.undoDeleteEntry),
         ),
       );
+    });
+  }
+
+  void _showErrorSnackBar(HomeError error) {
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(switch (error) {
+            HomeError.deleteEntry => 'Error deleting entry',
+            HomeError.loadUser => 'Error loading user',
+            HomeError.loadFoodRecords => 'Error loading food records',
+            HomeError.loadWaterRecords => 'Error loading water records',
+            HomeError.loadFoodProgress => 'Error loading food progress',
+            HomeError.loadWaterProgress => 'Error loading water progress',
+            HomeError.loadEntries => 'Error loading entries',
+            HomeError.loadHistoryData => 'Error loading history data',
+            HomeError.loadDataForSelectedDate => 'Error loading data for selected date',
+          }),
+        ),
+      );
+      _viewModel.resetError();
     });
   }
 }
