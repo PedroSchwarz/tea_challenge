@@ -3,7 +3,7 @@
         {
             "id": null,
             "name": "Grilled Chicken Breast",
-            "caloriesPerPortion": 165,
+            "calories": 165,
             "portionSize": 1.0,
             "carbs": 0.0,
             "protein": 31.0,
@@ -13,7 +13,7 @@
         {
             "id": null,
             "name": "Brown Rice",
-            "caloriesPerPortion": 111,
+            "calories": 111,
             "portionSize": 1.5,
             "carbs": 23.0,
             "protein": 2.6,
@@ -23,7 +23,7 @@
         {
             "id": null,
             "name": "Avocado",
-            "caloriesPerPortion": 160,
+            "calories": 160,
             "portionSize": 0.5,
             "carbs": 8.5,
             "protein": 2.0,
@@ -33,7 +33,7 @@
         {
             "id": null,
             "name": "Greek Yogurt",
-            "caloriesPerPortion": 100,
+            "calories": 100,
             "portionSize": 1.0,
             "carbs": 6.0,
             "protein": 17.0,
@@ -43,7 +43,7 @@
         {
             "id": null,
             "name": "Salmon Fillet",
-            "caloriesPerPortion": 206,
+            "calories": 206,
             "portionSize": 1.2,
             "carbs": 0.0,
             "protein": 22.0,
@@ -53,7 +53,7 @@
         {
             "id": null,
             "name": "Sweet Potato",
-            "caloriesPerPortion": 86,
+            "calories": 86,
             "portionSize": 2.0,
             "carbs": 20.1,
             "protein": 1.6,
@@ -63,7 +63,7 @@
         {
             "id": null,
             "name": "Oatmeal",
-            "caloriesPerPortion": 154,
+            "calories": 154,
             "portionSize": 1.0,
             "carbs": 27.0,
             "protein": 5.0,
@@ -73,7 +73,7 @@
         {
             "id": null,
             "name": "Banana",
-            "caloriesPerPortion": 89,
+            "calories": 89,
             "portionSize": 1.0,
             "carbs": 22.8,
             "protein": 1.1,
@@ -83,7 +83,7 @@
         {
             "id": null,
             "name": "Quinoa Salad",
-            "caloriesPerPortion": 120,
+            "calories": 120,
             "portionSize": 1.5,
             "carbs": 22.0,
             "protein": 4.4,
@@ -93,7 +93,7 @@
         {
             "id": null,
             "name": "Almonds",
-            "caloriesPerPortion": 164,
+            "calories": 164,
             "portionSize": 0.25,
             "carbs": 6.1,
             "protein": 6.0,

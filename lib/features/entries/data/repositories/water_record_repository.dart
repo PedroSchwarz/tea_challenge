@@ -21,6 +21,15 @@ class WaterRecordRepository {
     }
   }
 
+  Future<void> insertWaterRecords(List<WaterRecord> records) async {
+    try {
+      await waterLocalDataSource.insertWaterRecords(records);
+    } catch (e, s) {
+      _logger.severe('Error inserting water records', e, s);
+      rethrow;
+    }
+  }
+
   Future<void> updateWaterRecord(WaterRecord record) async {
     try {
       await waterLocalDataSource.updateWaterRecord(record);

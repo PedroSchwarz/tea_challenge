@@ -29,7 +29,7 @@ class HistoryRepository {
 
         // Load food records for this date
         final foodRecords = await foodRecordRepository.getFoodRecords(date: date);
-        final totalCalories = foodRecords.fold(0.0, (sum, record) => sum + (record.caloriesPerPortion * record.portionSize));
+        final totalCalories = foodRecords.fold(0.0, (sum, record) => sum + record.totalCalories);
 
         // Load water records for this date
         final waterRecords = await waterRecordRepository.getWaterRecords(date: date);
