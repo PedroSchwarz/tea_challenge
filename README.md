@@ -122,6 +122,37 @@ There is an alternative branch that implements caching for the last 3 days of da
 
 The current implementation loads data on-demand for the selected date, which provides a good balance between performance and code simplicity.
 
+## Alternative Implementation: Dart Workspaces
+
+This project could alternatively be structured using **Dart workspaces** for monorepo support, which offers several advantages for larger-scale applications:
+
+### Benefits of Dart Workspaces
+
+- **Package Separation**: Each feature or module can be its own package with clear boundaries
+- **Global Dependencies Management**: Centralized dependency management across all packages
+- **Shared Modules**: Reusable packages for common functionality like:
+  - Design system components
+  - Core business logic
+  - Database models and repositories
+  - Utility functions
+- **Independent Versioning**: Each package can have its own version and release cycle
+- **Better Testing**: Isolated testing environments for each package
+- **Scalability**: Easier to scale as the project grows with multiple teams
+
+### Considerations
+
+- **Learning Curve**: Dart workspaces are relatively new for native Dart development
+- **Complexity**: Adds overhead for smaller projects
+- **Tooling**: Requires understanding of workspace configuration and package management
+
+### Alternative: Melos
+
+For teams preferring a more established solution, **Melos** provides excellent monorepo management for Dart/Flutter projects with:
+- Automated versioning and publishing
+- Cross-package dependency management
+- Custom scripts and commands
+- Better integration with existing Dart tooling
+
 ### Getting Started
 
 1. Ensure you have Flutter 3.7.2+ installed
