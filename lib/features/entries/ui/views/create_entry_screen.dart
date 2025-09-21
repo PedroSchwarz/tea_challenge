@@ -16,7 +16,7 @@ class CreateEntryScreen extends StatefulWidget {
   final int? id;
   final EntryType? type;
 
-  static const String routeName = 'create_retry';
+  static const String routeName = 'create_entry';
 
   @override
   CreateEntryScreenState createState() => CreateEntryScreenState();
